@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "796860728311",
+    "firebase_url": "https://vacapj-6acf5.firebaseio.com",
+    "project_id": "vacapj-6acf5",
+    "storage_bucket": "vacapj-6acf5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796860728311:android:dfdcee09baf527d7f524f2",
+        "android_client_info": {
+          "package_name": "com.example.vacapj"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796860728311-omvturgsprd81k87fikc7me6hal3s3ru.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vacapj",
+            "certificate_hash": "1322dea8ed910197b0c7f257c89dd6631ced4e3a"
+          }
+        },
+        {
+          "client_id": "796860728311-tus069iat8clkubamnvtqjk9em386rk7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXYJdLKrOKDDqwxOCrYPAveyOs5DD_4pM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "796860728311-tus069iat8clkubamnvtqjk9em386rk7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
