@@ -27,10 +27,14 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     /* for naver login api start*/
-    implementation ('com.naver.nid:naveridlogin-android-sdk:4.2.6')
-    implementation ('com.android.support:appcompat-v7:28.0.0')
-    implementation ('com.android.support:support-core-utils:28.0.0')
-    implementation ('com.android.support:customtabs:28.0.0')
-    implementation ('com.android.support:support-v4:28.0.0')
+    implementation 'com.naver.nid:naveridlogin-android-sdk:4.2.6'
+    implementation 'com.android.support:appcompat-v7:29.0.0'
+    implementation 'com.android.support:support-core-utils:29.0.0'
+    implementation 'com.android.support:customtabs:29.0.0'
+    implementation 'com.android.support:support-v4:29.0.0'
     /* for naver login api end*/
+    /* for naver map api*/
+    implementation 'com.naver.maps:map-sdk:3.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    /* for naver map api*/
 }
