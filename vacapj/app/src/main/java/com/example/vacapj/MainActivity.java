@@ -3,6 +3,7 @@ package com.example.vacapj;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -97,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                         payText.setText(gotPay);
                     }
                 });
+                Intent intent = new Intent(MainActivity.this,Room_Info.class);
+                startActivity(intent);
             }
         });
     }
