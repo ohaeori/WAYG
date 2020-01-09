@@ -1,8 +1,11 @@
 package com.example.n_login_test;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -39,18 +42,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-//        String name = bundle.getString("name");
-//
-//        TextView_name.setText(name);
+        String name = bundle.getString("name");
+        final String type = bundle.getString("type");
+
+        TextView_name.setText(name);
 
         /*logout Button event ~ */
         logout_Button.setClickable(true);
         logout_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOAuthLoginModule.logout(mContext);
-                finish();
-                startActivity(new Intent(MapActivity.this, MainActivity.class));
+                if (type.contentEquals("NAVER")) {
+                    mOAuthLoginModule.logout(mContext);
+                    finish();
+                    startActivity(new Intent(MapActivity.this, MainActivity.class));
+                } else if (type.contentEquals("GOOGLE")) {
+                    AlertDialog.Builder alt_bld = new AlertDialog.Builder(v.getContext());
+                    alt_bld.setMessage("로그아웃 하시겠습니까?").setCancelable(false)
+                            .setPositiveButton("네",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            signOut();
+                                        }
+                                    }).setNegativeButton("아니오",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = alt_bld.create();
+                    // 대화창 제목 설정
+                    alert.setTitle("로그아웃");
+                    // 대화창 아이콘 설정
+                    //alert.setIcon(R.drawable.check_dialog_64);
+                    // 대화창 배경 색 설정
+                    alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
+                    alert.show();
+                }
             }
         });
         /* ~ logout Button event*/
@@ -99,5 +127,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         infoWindow1.open(marker1);
+    }
+
+    // 로그아웃
+    private void signOut() {
+        //mAuth.signOut();
+        finish();
+        startActivity(new Intent(MapActivity.this, MainActivity.class));
     }
 }

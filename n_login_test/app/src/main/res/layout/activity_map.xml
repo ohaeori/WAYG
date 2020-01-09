@@ -11,16 +11,27 @@
         android:name="com.naver.maps.map.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/map"
+        app:layout_constraintStart_toStartOf="@+id/map"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/TextView_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="user_name"
-        android:textColor="#8BC34A"
-        android:textSize="13sp"
+        android:textColor="#1EC800"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +44,7 @@
         android:id="@+id/logout"
         android:layout_width="70dp"
         android:layout_height="25dp"
-        android:background="#8BC34A"
+        android:background="#1EC800"
         android:clickable="true"
         android:focusable="true"
         android:text="logout"
