@@ -16,6 +16,7 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 
 public class Main2Activity extends AppCompatActivity implements OnMapReadyCallback {
@@ -63,6 +64,12 @@ public class Main2Activity extends AppCompatActivity implements OnMapReadyCallba
         //location set
         naverMap.setLocationSource(locationSource);
 
+
+
+
+
+
+
         /*marker mode change if map mode change
         naverMap.addOnOptionChangeListener(() -> {
             if (naverMap.isNightModeEnabled()) {
@@ -83,6 +90,8 @@ public class Main2Activity extends AppCompatActivity implements OnMapReadyCallba
 
     //change camera
     public void changeCamera(View v){
+        //LocationOverlay locationOverlay = Map.getLocationOverlay(); //
+        //Map.moveCamera(CameraUpdate.scrollTo(locationOverlay.getPosition())); get current location LatLng
         Map.moveCamera(CameraUpdate.scrollTo(new LatLng(35.8796713,128.6262873)).animate(CameraAnimation.Easing));
     }
 
