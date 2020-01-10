@@ -23,6 +23,7 @@ import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
 
 import static com.example.n_login_test.MainActivity.mContext;
+import static com.example.n_login_test.MainActivity.mGoogleSignInClient;
 import static com.example.n_login_test.MainActivity.mOAuthLoginModule;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NaverMap.OnMapClickListener {
@@ -52,36 +53,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         logout_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (type.contentEquals("NAVER")) {
-                    mOAuthLoginModule.logout(mContext);
-                    finish();
-                    startActivity(new Intent(MapActivity.this, MainActivity.class));
-                } else if (type.contentEquals("GOOGLE")) {
-                    AlertDialog.Builder alt_bld = new AlertDialog.Builder(v.getContext());
-                    alt_bld.setMessage("로그아웃 하시겠습니까?").setCancelable(false)
-                            .setPositiveButton("네",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            signOut();
-                                        }
-                                    }).setNegativeButton("아니오",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert = alt_bld.create();
-                    // 대화창 제목 설정
-                    alert.setTitle("로그아웃");
-                    // 대화창 아이콘 설정
-                    //alert.setIcon(R.drawable.check_dialog_64);
-                    // 대화창 배경 색 설정
-                    alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
-                    alert.show();
-                }
+                show_Dialog(v, type);
             }
-        });
-        /* ~ logout Button event*/
+        });/*logout Button event fin*/
 
         MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
@@ -134,5 +108,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //mAuth.signOut();
         finish();
         startActivity(new Intent(MapActivity.this, MainActivity.class));
+    }
+
+    //Dialog display
+    private void show_Dialog(View v, final String t) {
+        AlertDialog.Builder alt_bld = new AlertDialog.Builder(v.getContext());
+        alt_bld.setMessage("로그아웃 하시겠습니까?").setCancelable(false)
+                .setPositiveButton("네",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                /*실제 각 사이트의 로그아웃 method*/
+                                if (t.equals("NAVER")) mOAuthLoginModule.logout(mContext);
+                                else if (t.equals("GOOGLE")) mGoogleSignInClient.signOut();
+                                /*초기화면으로*/
+                                finish();
+                                startActivity(new Intent(MapActivity.this, MainActivity.class));
+                            }
+                        }).setNegativeButton("아니오",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alt_bld.create();
+        // 대화창 제목 설정
+        alert.setTitle("로그아웃");
+        // 대화창 아이콘 설정
+        //alert.setIcon(R.drawable.check_dialog_64);
+        // 대화창 배경 색 설정
+        alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
+        alert.show();
     }
 }

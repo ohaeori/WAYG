@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     OAuthLoginButton authLoginButton;
     /*Google login field*/
     SignInButton Google_Login;
-    GoogleSignInClient mGoogleSignInClient;
+    public static GoogleSignInClient mGoogleSignInClient;
     /*
      * naver login handler
      * OAuthLoginHandler를 startOAuthLoginActivity() 메서드 호출 시 파라미터로 전달하거나 OAuthLoginButton
