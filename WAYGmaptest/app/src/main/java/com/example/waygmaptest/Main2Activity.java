@@ -35,6 +35,7 @@ public class Main2Activity extends AppCompatActivity implements OnMapReadyCallba
 
     ArrayList<LatLng> coor = new ArrayList<LatLng>();
     ArrayList<Marker>  markerList= new ArrayList<Marker>();
+    ArrayList<String> titleList = new ArrayList<String>();
 
 
 
@@ -194,6 +195,12 @@ public class Main2Activity extends AppCompatActivity implements OnMapReadyCallba
 
     public void setMarkerList(NaverMap naverMap){
 
+        titleList.add("동대구역 1번 출구");
+        titleList.add("동대구역 2번 출구");
+        titleList.add("동대구역 3번 출구");
+        titleList.add("동대구역 4번 출구");
+        titleList.add("동대구역 5번 출구");
+
         coor.add(new LatLng(35.8820713,128.6262873));
         coor.add(new LatLng(35.8778713,128.6262873));
         coor.add(new LatLng(35.8799713,128.6262873));
@@ -226,6 +233,8 @@ public class Main2Activity extends AppCompatActivity implements OnMapReadyCallba
             //set marker coordinate
 
             marker.setPosition(coor.get(i));
+            marker.setCaptionText(titleList.get(i));
+            marker.setCaptionColor(Color.BLUE);
             markerList.add(marker);
 
 
@@ -266,6 +275,10 @@ public class Main2Activity extends AppCompatActivity implements OnMapReadyCallba
 
 
 
+
+    }
+
+    public void search(View v){
 
     }
 
