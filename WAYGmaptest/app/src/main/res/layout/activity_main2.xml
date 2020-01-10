@@ -23,5 +23,13 @@
             android:text="CameraChange"
             android:layout_marginTop="50dp"
             />
+
+        <Button
+            android:id="@+id/markerBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:text="MarkerAdd"
+            android:onClick="markerAdd"/>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

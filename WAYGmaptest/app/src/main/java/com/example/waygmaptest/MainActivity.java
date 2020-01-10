@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Map = naverMap;
 
         naverMap.setOnMapClickListener(this);
+
     }
 
     @Override
@@ -71,4 +72,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         infoWindow1.open(marker1);
     }
+
+
 }
