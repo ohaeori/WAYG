@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,22 +30,14 @@ public class Room_Info extends AppCompatActivity {
     TextView timeText;
     TextView payText;
     TextView mem1Text;
-    TextView mem2Text;
-    TextView mem3Text;
-    TextView mem4Text;
     TextView grade1Text;
-    TextView grade2Text;
-    TextView grade3Text;
-    TextView grade4Text;
     FirebaseFirestore db;
     DocumentReference docRef;
     private static final String TAG = "DocSnippets";
-    String uid1;
-    String uid2;
-    String uid3;
-    String uid4;
     private OnCompleteListener<DocumentSnapshot> onCompleteListener;
     static String grd;
+    ArrayList<String>  memlist = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,17 +45,10 @@ public class Room_Info extends AppCompatActivity {
         timeText = findViewById(R.id.output_time);
         payText  = findViewById(R.id.output_pay);
         mem1Text = findViewById(R.id.mem1);
-        //mem2Text = findViewById(R.id.mem2);
-        //mem3Text = findViewById(R.id.mem3);
-        //mem4Text = findViewById(R.id.mem4);
         grade1Text = findViewById(R.id.grade1);
-        //grade2Text = findViewById(R.id.grade2);
-        //grade3Text = findViewById(R.id.grade3);
-        //grade4Text = findViewById(R.id.grade4);
-
+        join_Room = findViewById(R.id.join_room);
 
         db= FirebaseFirestore.getInstance();
-        join_Room = findViewById(R.id.join_room);
         docRef = db.collection("Room").document("11");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>(){
             @Override
@@ -70,39 +56,19 @@ public class Room_Info extends AppCompatActivity {
                 if(task.isSuccessful()){
                     String timeString;
                     String payString;
-
+String room_Id;
                     DocumentSnapshot document = task.getResult();
                     Map<String,Object> map = document.getData();
                     ArrayList<String> arrayList;
                     arrayList = (ArrayList)map.get("member");
+                    memlist = arrayList;
                     mem_Number = (Long)map.get("memnum");
                     timeString = (String)map.get("time");
                     payString = (String)map.get("pay");
                     timeText.setText(timeString);
                     payText.setText(payString);
-                    /*uid1 = arrayList.get(0);
-                    mem1Text.setText(uid1);
-                    uidRead(uid1);
-                    System.out.println(grd);
-                    grade1Text.setText(grd); //왜 grd 를 함수로 넘기는건 안되지?
-                    if(mem_Number>1) {
-                        uid2 = arrayList.get(1);
-                        mem2Text.setText(uid2);
-                        uidRead(uid2);
-                        grade2Text.setText(grd);
-                        if(mem_Number>2) {
-                            uid3 = arrayList.get(2);
-                            mem3Text.setText(uid3);
-                            uidRead(uid3);
-                            grade3Text.setText(grd);
-                            if(mem_Number>3) {
-                                uid4 = arrayList.get(3);
-                                mem4Text.setText(uid4);
-                                uidRead(uid4);
-                                grade4Text.setText(grd);
-                            }
-                        }
-                    }*/
+room_Id=document.getId();
+System.out.println(room_Id);
                     for(int i = 0;i<arrayList.size();i++)
                         if(arrayList.indexOf(i)!=NULL) {
                             mem1Text.setText(mem1Text.getText().toString() + "\n\n\n" + arrayList.get(i));
@@ -119,7 +85,11 @@ public class Room_Info extends AppCompatActivity {
                 }
             }
         });
-
+        /*for(int i=0;i<memlist.size();i++) {
+            if (memlist.indexOf(i) != NULL) {
+                uidRead(memlist.get(i));
+            }
+        }*/
     }//여기서부터 아이디정보 기반으로 평점을 불러와야하는데...
     public void setGrd(String g)
     {
@@ -145,7 +115,6 @@ public class Room_Info extends AppCompatActivity {
                     setGrd(gg);
                     Room_Info.grd = gg;
                     grade1Text.setText(grade1Text.getText().toString()+"\n\n\n"+gg);
-                    SystemClock.sleep(5);
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
@@ -155,13 +124,9 @@ public class Room_Info extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
                 }
-
             }
-
         });
-
     }
-
 }
 /*
 수정해야할 부분: 방정보를 익명클래스에서 열어 그 내부에서 유저정보를 다시 접근하는데 평점 순서가 뒤죽박죽.
