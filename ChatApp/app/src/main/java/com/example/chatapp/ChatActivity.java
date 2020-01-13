@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private String CHAT_NAME;
+    private String ROOM_NAME;
     private String USER_NAME;
 
     private ListView chat_view;
@@ -40,11 +40,14 @@ public class ChatActivity extends AppCompatActivity {
 
         // 로그인 화면에서 받아온 채팅방 이름, 유저 이름 저장
         Intent intent = getIntent();
-        CHAT_NAME = intent.getStringExtra("chatName");
+        ROOM_NAME = intent.getStringExtra("roomName");
         USER_NAME = intent.getStringExtra("userName");
 
+        ChatDBS chatDBS = new ChatDBS(USER_NAME, "동대구역", "대구역");
+        databaseReference.child("chat").child(ROOM_NAME).push().setValue(chatDBS);
+
         // 채팅 방 입장
-        openChat(CHAT_NAME);
+        openChat(ROOM_NAME);
 
         // 보내기 버튼에 대한 클릭리스너
         chat_send.setOnClickListener(new View.OnClickListener() {
@@ -53,22 +56,22 @@ public class ChatActivity extends AppCompatActivity {
                 if (chat_edit.getText().toString().equals(""))
                     return;
 
-                ChatDBS chat = new ChatDBS(USER_NAME, chat_edit.getText().toString());
-                databaseReference.child("chat").child(CHAT_NAME).push().setValue(chat);
+                _Message chat = new _Message(USER_NAME, chat_edit.getText().toString());
+                databaseReference.child("chat").child(ROOM_NAME).child("messages").push().setValue(chat);
                 chat_edit.setText("");
             }
         });
     }
 
     private void addMessage(DataSnapshot dataSnapshot, ArrayAdapter<String> adapter) {
-        ChatDBS chatDBS = dataSnapshot.getValue(ChatDBS.class);
-        adapter.add(chatDBS.getUserName() + " : " + chatDBS.getMessage());
-        //if(chatDBS.getUserName().equals(USER_NAME))
+        _Message _message = dataSnapshot.getValue(_Message.class);
+        adapter.add(_message.getUserName() + " : " + _message.getMessage());
+        //if(_message.getUserName().equals(USER_NAME))
         //chat_view.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
     }
 
     private void removeMessage(DataSnapshot dataSnapshot, ArrayAdapter<String> adapter) {
-        ChatDBS chatDBS = dataSnapshot.getValue(ChatDBS.class);
+        _Message chatDBS = dataSnapshot.getValue(_Message.class);
         adapter.remove(chatDBS.getUserName() + " : " + chatDBS.getMessage());
     }
 
@@ -79,7 +82,7 @@ public class ChatActivity extends AppCompatActivity {
         chat_view.setAdapter(adapter);
 
         // 데이터 받아오기 및 어댑터 데이터 추가 및 삭제 등..리스너 관리
-        databaseReference.child("chat").child(chatName).addChildEventListener(new ChildEventListener() {
+        databaseReference.child("chat").child(chatName).child("messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 addMessage(dataSnapshot, adapter);

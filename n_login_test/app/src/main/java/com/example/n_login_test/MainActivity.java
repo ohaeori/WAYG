@@ -32,13 +32,13 @@ import java.net.URL;
 enum Type{ NAVER, GOOGLE }
 
 public class MainActivity extends AppCompatActivity {
-    private static final int RC_SIGN_IN = 100;
     /*naver login field*/
     public static OAuthLogin mOAuthLoginModule;
     public static Context mContext;
     OAuthLoginButton authLoginButton;
     /*Google login field*/
     SignInButton Google_Login;
+    private static final int RC_SIGN_IN = 100;
     public static GoogleSignInClient mGoogleSignInClient;
     /*
      * naver login handler

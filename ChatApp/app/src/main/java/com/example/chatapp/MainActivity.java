@@ -23,7 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText user_chat, user_name;
+    private EditText room_name, user_name;
     private Button create_room;
     private ListView chat_list;
 
@@ -36,21 +36,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        user_chat = (EditText) findViewById(R.id.room_name);
+        room_name = (EditText) findViewById(R.id.room_name);
         user_name = (EditText) findViewById(R.id.user_name);
         create_room = (Button) findViewById(R.id.create_room);
         chat_list = (ListView) findViewById(R.id.chat_list);
+
         /*Create Button event*/
         create_room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (user_name.getText().toString().equals("") || user_chat.getText().toString().equals("")) {
+                if (user_name.getText().toString().equals("") || room_name.getText().toString().equals("")) {
                     ToastMessage("USER,ROOM NAME을 입력해주세요");
                     return;
                 }
 
-                Move_on_ChatActivity(user_chat.getText().toString(), user_name.getText().toString());
-                user_chat.setText("");
+                Move_on_ChatActivity(room_name.getText().toString(), user_name.getText().toString());
+                room_name.setText("");
             }
         });
 
@@ -124,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
     }
 
-    private void Move_on_ChatActivity(String chatname, String username) {
+    private void Move_on_ChatActivity(String roomname, String username) {
         Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-        intent.putExtra("chatName", chatname);
+        intent.putExtra("roomName", roomname);
         intent.putExtra("userName", username);
         startActivity(intent);
     }

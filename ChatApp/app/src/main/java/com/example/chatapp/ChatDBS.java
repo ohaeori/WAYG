@@ -1,35 +1,35 @@
 package com.example.chatapp;
 
 import java.util.ArrayList;
-
+/*realtime DataBase Chating room Structure*/
 public class ChatDBS {
+    private ArrayList<String> participants;
+    private String arrival;
+    private String departure;
 
-    private String userName;
-    private String message;
-    private ArrayList<String> participants = new ArrayList<>();
+    public ChatDBS(){}
 
-    public ChatDBS() {
+    public ChatDBS(String username, String arrival, String departure){
+        participants = new ArrayList<>();
+        participants.add(username);
+        this.arrival = arrival;
+        this.departure = departure;
     }
 
-    public ChatDBS(String userName, String message) {
-        this.userName = userName;
-        this.message = message;
+    public void setArrival(String arrival){
+        this.arrival = arrival;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getArrival(){
+        return this.arrival;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setDeparture(String departure){
+        this.departure = departure;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public String getDeparture(){
+        return this.departure;
     }
 
     public String getParticipants(){
@@ -46,5 +46,4 @@ public class ChatDBS {
     public int getNum_of_user(){
         return participants.size();
     }
-
 }
