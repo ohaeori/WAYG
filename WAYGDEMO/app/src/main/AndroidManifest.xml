@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.waygdemo">
-
     <!-- for use Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".MapActivity"></activity>
         <!-- [naveroauthlogin][start] for naver ID login -->
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
@@ -22,7 +21,6 @@
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginInAppBrowserActivity"
             android:label="OAuth2.0 In-app" />
-
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

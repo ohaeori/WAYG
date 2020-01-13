@@ -17,7 +17,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.OAuthLoginHandler;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
@@ -83,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         naverLogin();
+        googleLogin();
     }
 
 
@@ -111,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
         }/*naver login event finish*////////////////////////////////////////////////////////////////
 
     }
-
 
     /*get naver user's info*/
     class ProfileTask extends AsyncTask<String, Void, String> {
@@ -156,12 +155,70 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject object = new JSONObject(result);
                 if (object.getString("resultcode").equals("00")) {
                     JSONObject jsonObject = new JSONObject(object.getString("response"));
-                    Toast.makeText(LoginActivity.this,"!!!!!!!!!!!",Toast.LENGTH_SHORT).show();
-                   // Move_on_MapActivity(jsonObject.getString("name"), Type.NAVER);
+                    Move_on_MapActivity(jsonObject.getString("name"), Type.NAVER);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }/*ProfileTask class finish*/
+
+
+    private void googleLogin(){
+        /*Google login event*///////////////////////////////////////////////////////////////////////
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(LoginActivity.this, gso);
+        Google_Login = findViewById(R.id.Google_Login);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null) {//already google login
+            String name = account.getDisplayName();
+            Move_on_MapActivity(name, Type.GOOGLE);
+        }
+        Google_Login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signIn();
+            }
+        });/*Google login event fin*////////////////////////////////////////////////////////////////
+
+    }
+
+    /*Google login functions*///////////////////////////////////////////////////////////////////////
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    /*Google login handler*/
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            String name = account.getDisplayName();
+            Move_on_MapActivity(name, Type.GOOGLE);
+        } catch (ApiException e) {
+        }
+    }/*fin*/
+    /*Google login functions*///////////////////////////////////////////////////////////////////////
+
+    /*move on MainActivity -> MapActivity*/
+    private void Move_on_MapActivity(String name, Type t) {
+        LoginActivity.this.finish();
+
+        Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+        //intent.putExtra("name", name);
+        //intent.putExtra("type", t.toString());
+        startActivity(intent);
+    }
+
 }
