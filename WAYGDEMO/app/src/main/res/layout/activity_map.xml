@@ -6,34 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MapActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#FFFFFF">
-        <TextView
-            android:id="@+id/TextView_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="170dp"
-            android:layout_gravity="center"
-            android:text="user_name"
-            android:textColor="#1EC800"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/logout"
-            android:layout_width="70dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="70dp"
-            android:layout_gravity="center"
-            android:background="#1EC800"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="logout"
-            android:textColor="#FFFFFF" />
-    </LinearLayout>
-
     <FrameLayout
         android:id="@+id/map"
         android:layout_width="match_parent"
@@ -63,4 +35,32 @@
             android:onClick="markerAdd"
             android:text="MarkerAdd" />
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:id="@+id/TextView_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="190dp"
+            android:layout_gravity="center"
+            android:text="user_name"
+            android:textColor="#1EC800"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="80dp"
+            android:layout_gravity="center"
+            android:background="#1EC800"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="logout"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
 </RelativeLayout>
