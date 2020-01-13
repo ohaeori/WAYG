@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserMenu">
+    tools:context=".MenuActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="top"
         android:orientation="horizontal"
-        android:id="@+id/lay1"
-        app:layout_constraintBottom_toTopOf="@+id/lay4">
+        android:id="@+id/title_lay"
+        android:background="#def3ff"
+        app:layout_constraintBottom_toTopOf="@+id/time_lay">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="   상호명 :"
-            android:textSize="40sp" />
-
-        <TextView
-            android:id="@+id/Shop"
+            android:textSize="20sp"/>
+        <EditText
             android:layout_width="185dp"
             android:layout_height="wrap_content"
-            android:textSize="35sp" />
-
-
+            android:id="@+id/title_text"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="입력"
+            android:onClick="inputServer"
+            android:id="@+id/title_btn"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,75 +37,123 @@
         android:layout_weight="1"
         android:gravity="top"
         android:orientation="horizontal"
-        android:id="@+id/lay4"
-        app:layout_constraintBottom_toTopOf="@+id/lay3">
+        android:id="@+id/time_lay"
+        android:background="#def3ff"
+        app:layout_constraintBottom_toTopOf="@+id/menu_lay">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="  시간 :"
-            android:textSize="30sp" />
+            android:textSize="20sp"/>
 
-        <TextView
-            android:id="@+id/Time"
-            android:layout_width="180dp"
+        <EditText
+            android:layout_width="82dp"
             android:layout_height="wrap_content"
-            android:textSize="30sp" />
-
+            android:id="@+id/time_text" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="까지"
-            android:textSize="20sp" />
-
-
+            android:text="까지"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="출근"
+            android:id="@+id/start_btn"
+            android:onClick="start"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="퇴근"
+            android:onClick="end"
+            android:id="@+id/end_btn"/>
     </LinearLayout>
 
     <LinearLayout
 
-        android:id="@+id/lay3"
+        android:id="@+id/menu_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="top"
-        app:layout_constraintTop_toBottomOf="@+id/lay4"
+        android:background="#def3ff"
+        app:layout_constraintTop_toBottomOf="@+id/time_lay"
         android:orientation="horizontal"
         tools:ignore="MissingConstraints">
 
-
-
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="410dp"
-        android:layout_height="628dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/lay2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lay4">
-
         <TextView
-            android:id="@+id/ddd"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="30sp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   메뉴 :"
+            android:textSize="20sp" />
+
+        <EditText
+            android:layout_width="129dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/menu"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   가격 :"
+            android:textSize="20sp" />
+
+        <EditText
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/price"/>
 
     </LinearLayout>
-
     <LinearLayout
-        android:background="#00ff00"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f0faff"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/menu_lay"
+        >
+
+        <ListView
+            android:id="@+id/listview1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scrollbars="vertical"
+            tools:ignore="MissingConstraints"
+            tools:choiceMode="singleChoice">
+
+        </ListView>
+
+    </LinearLayout>
+    <LinearLayout
         android:id="@+id/lay2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:background="#8ABFA6"
         android:gravity="bottom"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="등록" />
 
+        <Button
+            android:id="@+id/btnDel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="삭제" />
+
+        <Button
+            android:id="@+id/btnEnd"
+            android:layout_width="11dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="종료"
+            android:onClick="saveFile"/>
 
     </LinearLayout>
 
