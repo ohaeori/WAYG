@@ -18,7 +18,11 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+
+        //for naver map API
+        maven{
+            url 'https://navercorp.bintray.com/maps'
+        }
     }
 }
 

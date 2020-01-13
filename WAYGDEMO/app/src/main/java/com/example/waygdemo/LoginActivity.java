@@ -40,10 +40,8 @@ public class LoginActivity extends AppCompatActivity {
     /*Google login field*/
     SignInButton Google_Login;
     public static GoogleSignInClient mGoogleSignInClient;
-    /*
-     * naver login handler
 
-     */
+    /* naver login handler */
     private OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {
         @Override
         public void run(boolean success) {
@@ -85,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
         googleLogin();
     }
 
-
     /*naver login event*////////////////////////////////////////////////////////////////////////
     private void naverLogin(){
         authLoginButton = findViewById(R.id.buttonOAuthLoginImg);
@@ -108,9 +105,9 @@ public class LoginActivity extends AppCompatActivity {
             }.start();
         } else {
             authLoginButton.setOAuthLoginHandler(mOAuthLoginHandler);
-        }/*naver login event finish*////////////////////////////////////////////////////////////////
-
+        }
     }
+    /*naver login event finish*////////////////////////////////////////////////////////////////////
 
     /*get naver user's info*/
     class ProfileTask extends AsyncTask<String, Void, String> {
@@ -163,9 +160,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }/*ProfileTask class finish*/
 
-
+    /*Google login event*///////////////////////////////////////////////////////////////////////
     private void googleLogin(){
-        /*Google login event*///////////////////////////////////////////////////////////////////////
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -181,9 +177,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 signIn();
             }
-        });/*Google login event fin*////////////////////////////////////////////////////////////////
-
-    }
+        });
+    }/*Google login event fin*//////////////////////////////////////////////////////////////////////
 
     /*Google login functions*///////////////////////////////////////////////////////////////////////
     private void signIn() {
@@ -216,8 +211,8 @@ public class LoginActivity extends AppCompatActivity {
         LoginActivity.this.finish();
 
         Intent intent = new Intent(LoginActivity.this, MapActivity.class);
-        //intent.putExtra("name", name);
-        //intent.putExtra("type", t.toString());
+        intent.putExtra("name", name);
+        intent.putExtra("type", t.toString());
         startActivity(intent);
     }
 

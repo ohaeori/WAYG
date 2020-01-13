@@ -1,13 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MapActivity">
-    <TextView
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#FFFFFF">
+        <TextView
+            android:id="@+id/TextView_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="170dp"
+            android:layout_gravity="center"
+            android:text="user_name"
+            android:textColor="#1EC800"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="70dp"
+            android:layout_gravity="center"
+            android:background="#1EC800"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="logout"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="eeeeeee"/>
+        tools:layout_editor_absoluteX="-31dp"
+        tools:layout_editor_absoluteY="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="changeMode"
+            android:text="ModeChange" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:onClick="changeCamera"
+            android:text="CameraChange" />
+
+        <Button
+            android:id="@+id/markerBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:onClick="markerAdd"
+            android:text="MarkerAdd" />
+    </FrameLayout>
+</RelativeLayout>
