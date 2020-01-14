@@ -18,7 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -39,6 +42,7 @@ import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.MarkerIcons;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.waygdemo.LoginActivity.mContext;
@@ -218,11 +222,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
         titleList.add("동대구역 1번 출구");
-        titleList.add("동대구역 3번 출구");
-        titleList.add("동대구역 5번 출구");
 
-        coor.add(new LatLng(35.8820713, 128.6262873));
-        coor.add(new LatLng(35.8799713, 128.6262873));
         coor.add(new LatLng(35.8799713, 128.6241873));
 
         Toast.makeText(MapActivity.this,""+titleList.size(),Toast.LENGTH_SHORT).show();
@@ -379,7 +379,36 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    public void plus(View v){
+    public void setGeopoint(String title, GeoPoint coordinate){
+        Map<String,Object> mapS = new HashMap<>();		// initialize hash-map
+        mapS.put("coordinate",coordinate);
+        mapS.put("title",title);
+        mapS.put("cnt",1);
+
+        db.collection("Location")
+                .add(mapS)								//upload at server mapS's data by auto ID
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
+    }
+
+    public void refresh(View v){
         db.collection("Location").get().addOnCompleteListener(this);
+    }
+
+
+
+    public void plus(View v){
+        setGeopoint("동대구역 3번 출구",new GeoPoint(35.8820713, 128.6262873));
+        setGeopoint("동대구역 5번 출구",new GeoPoint(35.8799713, 128.6262873));
     }
 }
