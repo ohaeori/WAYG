@@ -183,7 +183,7 @@ public class Room_Info extends AppCompatActivity {
             });
         }
 
-}
+
 public void getGeopoint() {
 
     db.collection("Room")
@@ -205,12 +205,39 @@ public void getGeopoint() {
                     }
                 }
             });
+	}
+
+public void setGeopoint()
+{
+    Map<String,Object> mapS = new HashMap<>();		// initialize hash-map
+    GeoPoint startCoor;
+    String title_String;
+    startCoor = //좌표값
+    mapS.put("coordinate",startCoor);
+    mapS.put("title",title_String);
+    
+    db.collection("Location")
+            .add(mapS)								//upload at server mapS's data by auto ID
+            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "Error adding document", e);
+                }
+            });
+	}
 }
 
+
 /*
-�닔�젙�빐�빞�븷 遺�遺�: 諛⑹젙蹂대�� �씡紐낇겢�옒�뒪�뿉�꽌 �뿴�뼱 洹� �궡遺��뿉�꽌 �쑀���젙蹂대�� �떎�떆 �젒洹쇳븯�뒗�뜲 �룊�젏 �닚�꽌媛� �뮘二쎈컯二�.
-�뼹�븦 蹂닿린�뿉�뒗 �뒪�젅�뱶 瑗ъ씠�뒗嫄곕옉 鍮꾩듂�빐 蹂댁씠湲곕뒗 �븯�뒗�뜲...
+占쎈땾占쎌젟占쎈퉸占쎈튊占쎈막 �겫占썽겫占�: 獄쎻뫗�젟癰귣�占쏙옙 占쎌뵡筌뤿굟寃�占쎌삋占쎈뮞占쎈퓠占쎄퐣 占쎈였占쎈선 域뱄옙 占쎄땀�겫占쏙옙肉됵옙苑� 占쎌�占쏙옙占쎌젟癰귣�占쏙옙 占쎈뼄占쎈뻻 占쎌젔域뱀눛釉�占쎈뮉占쎈쑓 占쎈즸占쎌젎 占쎈떄占쎄퐣揶쏉옙 占쎈츟雅뚯럥而�雅뚳옙.
+占쎈섰占쎈를 癰귣떯由곤옙肉됵옙�뮉 占쎈뮞占쎌쟿占쎈굡 �몭�딆뵠占쎈뮉椰꾧퀡�삂 �뜮袁⑸뱛占쎈퉸 癰귣똻�뵠疫꿸퀡�뮉 占쎈릭占쎈뮉占쎈쑓...
 01.13
-�뙆�씠�뼱�뒪�넗�뼱 api �뒗 鍮꾨룞湲곗떇�씠�씪 �벐�젅�뱶泥섎읆 �븯�굹�뒗 api �떎�뻾�븯怨� �븯�굹�뒗 洹� �떎�쓬以� �떎�뻾�븿.
-memlist 瑜� �닚李⑥쟻�쑝濡� uidread �븯硫� 鍮꾨룞湲곗떇�씠�씪 癒쇱� �걹�굹�뒗�냸�씠 �쐞�뿉 �뜥吏�.
+占쎈솁占쎌뵠占쎈선占쎈뮞占쎈꽅占쎈선 api 占쎈뮉 �뜮袁⑤짗疫꿸퀣�뻼占쎌뵠占쎌뵬 占쎈쾺占쎌쟿占쎈굡筌ｌ꼶�쓥 占쎈릭占쎄돌占쎈뮉 api 占쎈뼄占쎈뻬占쎈릭�⑨옙 占쎈릭占쎄돌占쎈뮉 域뱄옙 占쎈뼄占쎌벉餓ο옙 占쎈뼄占쎈뻬占쎈맙.
+memlist �몴占� 占쎈떄筌△뫁�읅占쎌몵嚥∽옙 uidread 占쎈릭筌롳옙 �뜮袁⑤짗疫꿸퀣�뻼占쎌뵠占쎌뵬 �솒�눘占� 占쎄국占쎄돌占쎈뮉占쎈꺒占쎌뵠 占쎌맄占쎈퓠 占쎈쑅筌욑옙.
  */
