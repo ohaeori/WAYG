@@ -19,8 +19,14 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class ChatActivity extends AppCompatActivity {
 
+    int count = 0;
+
+    private boolean is_create;
+
     private String ROOM_NAME;
     private String USER_NAME;
+    private String DEPARTURE;
+    private String ARRIVAL;
 
     private ListView chat_view;
     private EditText chat_edit;
@@ -38,13 +44,19 @@ public class ChatActivity extends AppCompatActivity {
         chat_edit = (EditText) findViewById(R.id.chat_edit);
         chat_send = (Button) findViewById(R.id.chat_sent);
 
-        // 로그인 화면에서 받아온 채팅방 이름, 유저 이름 저장
+        /*get intent info*/
         Intent intent = getIntent();
         ROOM_NAME = intent.getStringExtra("roomName");
         USER_NAME = intent.getStringExtra("userName");
+        DEPARTURE = intent.getStringExtra("departure");
+        ARRIVAL = intent.getStringExtra("arrival");
+        if(intent.getStringExtra("is_create").equals("true")) is_create = true;
+        else is_create = false;
 
-        ChatDBS chatDBS = new ChatDBS(USER_NAME, "동대구역", "대구역");
-        databaseReference.child("chat").child(ROOM_NAME).push().setValue(chatDBS);
+        if(is_create) {
+            ChatDBS chatDBS = new ChatDBS(USER_NAME, DEPARTURE, ARRIVAL);
+            databaseReference.child("chat").child(ROOM_NAME).push().setValue(chatDBS);
+        }
 
         // 채팅 방 입장
         openChat(ROOM_NAME);
@@ -65,9 +77,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private void addMessage(DataSnapshot dataSnapshot, ArrayAdapter<String> adapter) {
         _Message _message = dataSnapshot.getValue(_Message.class);
+        //if(_message.getUserName().equals(USER_NAME)
+        if(count%2==0) chat_view.setTextDirection(View.TEXT_DIRECTION_RTL);
+        else chat_view.setTextDirection(View.TEXT_DIRECTION_LTR);
         adapter.add(_message.getUserName() + " : " + _message.getMessage());
-        //if(_message.getUserName().equals(USER_NAME))
-        //chat_view.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
     }
 
     private void removeMessage(DataSnapshot dataSnapshot, ArrayAdapter<String> adapter) {
