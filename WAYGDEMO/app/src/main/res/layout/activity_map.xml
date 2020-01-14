@@ -34,6 +34,13 @@
             android:layout_marginTop="100dp"
             android:onClick="markerAdd"
             android:text="MarkerAdd" />
+        <Button
+            android:id="@+id/plusBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:onClick="plus"
+            android:text="MarkerPlus" />
     </FrameLayout>
 
     <LinearLayout

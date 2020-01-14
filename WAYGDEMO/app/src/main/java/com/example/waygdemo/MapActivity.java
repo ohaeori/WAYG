@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraPosition;
@@ -32,12 +39,19 @@ import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.MarkerIcons;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static com.example.waygdemo.LoginActivity.mContext;
 import static com.example.waygdemo.LoginActivity.mGoogleSignInClient;
 import static com.example.waygdemo.LoginActivity.mOAuthLoginModule;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NaverMap.OnMapClickListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NaverMap.OnMapClickListener, OnCompleteListener<QuerySnapshot> {
+
+    //for firestore
+    FirebaseFirestore db=FirebaseFirestore.getInstance();
+    private static final String TAG = "DocSnippets";
+
+
     /*for Naver Map field*/
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     ArrayList<LatLng> coor = new ArrayList<LatLng>(); //coordinate of departure
@@ -108,7 +122,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //location set
         naverMap.setLocationSource(locationSource);
 
-        setMarkerList(naverMap);
+        //addMarker from server
+        db.collection("Location").get().addOnCompleteListener(this);
 
         naverMap.setOnMapClickListener(this);
     }
@@ -201,18 +216,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setMarkerList(NaverMap naverMap) {
 
+
         titleList.add("동대구역 1번 출구");
-        titleList.add("동대구역 2번 출구");
         titleList.add("동대구역 3번 출구");
-        titleList.add("동대구역 4번 출구");
         titleList.add("동대구역 5번 출구");
 
         coor.add(new LatLng(35.8820713, 128.6262873));
-        coor.add(new LatLng(35.8778713, 128.6262873));
         coor.add(new LatLng(35.8799713, 128.6262873));
-        coor.add(new LatLng(35.8799713, 128.6283873));
         coor.add(new LatLng(35.8799713, 128.6241873));
 
+        Toast.makeText(MapActivity.this,""+titleList.size(),Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < coor.size(); i++) {
             Marker marker = new Marker();
@@ -338,5 +351,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // 대화창 배경 색 설정
         alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
         alert.show();
+    }
+
+    //get Location info from server
+    @Override
+    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        if (task.isSuccessful()) {
+            coor.clear();
+            titleList.clear();
+            for (QueryDocumentSnapshot document : task.getResult()) {
+                Log.d(TAG, document.getId() + " => " + document.getData());
+                java.util.Map<String, Object> mapG = document.getData();
+                GeoPoint cur = (GeoPoint) mapG.get("coordinate");
+                String title =mapG.get("title").toString();
+
+                coor.add(new LatLng(cur.getLatitude(),cur.getLongitude()));
+                titleList.add(title);
+            }
+        } else {
+            Log.d(TAG, "Error getting documents: ", task.getException());
+        }
+        setMarkerList(Map);
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    public void plus(View v){
+        db.collection("Location").get().addOnCompleteListener(this);
     }
 }
