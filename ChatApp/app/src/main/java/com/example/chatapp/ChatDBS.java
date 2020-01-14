@@ -39,7 +39,7 @@ public class ChatDBS {
         return all_participants.substring(0, all_participants.length()-2);
     }
 
-    public void setParticipants(String participant){
+    public void addParticipants(String participant){
         participants.add(participant);
     }
 
