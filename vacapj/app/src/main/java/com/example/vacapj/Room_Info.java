@@ -184,10 +184,33 @@ public class Room_Info extends AppCompatActivity {
         }
 
 }
+public void getGeopoint() {
+
+    db.collection("Room")
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                            GeoPoint cur;
+                            Map<String,Object> mapG = document.getData();
+                            cur = (GeoPoint)mapG.get("start");
+                            //System.out.println(cur);
+                            //coor.add(new LatLng(cur.getLatitude(),cur.getLongitude());
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+}
+
 /*
-수정해야할 부분: 방정보를 익명클래스에서 열어 그 내부에서 유저정보를 다시 접근하는데 평점 순서가 뒤죽박죽.
-얼핏 보기에는 스레드 꼬이는거랑 비슷해 보이기는 하는데...
+�닔�젙�빐�빞�븷 遺�遺�: 諛⑹젙蹂대�� �씡紐낇겢�옒�뒪�뿉�꽌 �뿴�뼱 洹� �궡遺��뿉�꽌 �쑀���젙蹂대�� �떎�떆 �젒洹쇳븯�뒗�뜲 �룊�젏 �닚�꽌媛� �뮘二쎈컯二�.
+�뼹�븦 蹂닿린�뿉�뒗 �뒪�젅�뱶 瑗ъ씠�뒗嫄곕옉 鍮꾩듂�빐 蹂댁씠湲곕뒗 �븯�뒗�뜲...
 01.13
-파이어스토어 api 는 비동기식이라 쓰레드처럼 하나는 api 실행하고 하나는 그 다음줄 실행함.
-memlist 를 순차적으로 uidread 하면 비동기식이라 먼저 끝나는놈이 위에 써짐.
+�뙆�씠�뼱�뒪�넗�뼱 api �뒗 鍮꾨룞湲곗떇�씠�씪 �벐�젅�뱶泥섎읆 �븯�굹�뒗 api �떎�뻾�븯怨� �븯�굹�뒗 洹� �떎�쓬以� �떎�뻾�븿.
+memlist 瑜� �닚李⑥쟻�쑝濡� uidread �븯硫� 鍮꾨룞湲곗떇�씠�씪 癒쇱� �걹�굹�뒗�냸�씠 �쐞�뿉 �뜥吏�.
  */
