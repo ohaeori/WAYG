@@ -1,11 +1,11 @@
 package com.example.chatapp;
 
-import java.util.ArrayList;
 /*realtime database Message structure*/
 public class _Message {
 
     private String userName;
     private String message;
+    private int res=R.layout.left_row;
 
     public _Message() {
     }
@@ -30,4 +30,8 @@ public class _Message {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public int getRes(){ return res; }
+
+    public void setRes(int res) { this.res = res; }
 }

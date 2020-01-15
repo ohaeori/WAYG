@@ -17,9 +17,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class ChatActivity extends AppCompatActivity {
+import java.util.ArrayList;
 
-    int count = 0;
+public class ChatActivity extends AppCompatActivity {
 
     private boolean is_create;
 
@@ -75,23 +75,23 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void addMessage(DataSnapshot dataSnapshot, ArrayAdapter<String> adapter) {
+    private void addMessage(DataSnapshot dataSnapshot, ChatViewAdapter adapter) {//ArrayAdapter<String> adapter
         _Message _message = dataSnapshot.getValue(_Message.class);
-        //if(_message.getUserName().equals(USER_NAME)
-        if(count%2==0) chat_view.setTextDirection(View.TEXT_DIRECTION_RTL);
-        else chat_view.setTextDirection(View.TEXT_DIRECTION_LTR);
-        adapter.add(_message.getUserName() + " : " + _message.getMessage());
+        //if(_message.getUserName().equals(USER_NAME)) _message.setRes(R.layout.right_row);
+        adapter.addItem(_message.getUserName() ," : " + _message.getMessage());
     }
 
-    private void removeMessage(DataSnapshot dataSnapshot, ArrayAdapter<String> adapter) {
+    private void removeMessage(DataSnapshot dataSnapshot, ChatViewAdapter adapter) {
         _Message chatDBS = dataSnapshot.getValue(_Message.class);
-        adapter.remove(chatDBS.getUserName() + " : " + chatDBS.getMessage());
+        //adapter.clearItem(chatDBS.getUserName() + " : " + chatDBS.getMessage());
     }
 
     private void openChat(String chatName) {
         // 리스트 어댑터 생성 및 세팅
-        final ArrayAdapter<String> adapter
-                = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
+//        final ArrayAdapter<String> adapter
+//                = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
+
+        final ChatViewAdapter adapter = new ChatViewAdapter();
         chat_view.setAdapter(adapter);
 
         // 데이터 받아오기 및 어댑터 데이터 추가 및 삭제 등..리스너 관리

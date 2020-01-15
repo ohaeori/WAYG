@@ -77,6 +77,32 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 /*check num of participants... not over 4*/
+                databaseReference.child("chat").child(adapter.getItem(position).toString()).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        adapter.add(dataSnapshot.getKey());
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 /*Dialog display*/
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);

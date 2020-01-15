@@ -55,7 +55,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     FirebaseFirestore db=FirebaseFirestore.getInstance();
     private static final String TAG = "DocSnippets";
 
-
     /*for Naver Map field*/
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     ArrayList<LatLng> coor = new ArrayList<LatLng>(); //coordinate of departure
