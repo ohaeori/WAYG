@@ -38,6 +38,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.android.gms.common.internal.safeparcel.SafeParcelable.NULL;
+
 enum Type{ NAVER, GOOGLE }
 
 public class LoginActivity extends AppCompatActivity {
@@ -224,7 +226,8 @@ public class LoginActivity extends AppCompatActivity {
 
     /*move on MainActivity -> MapActivity*/
     private void Move_on_MapActivity(String name, Type t) {
-        checkId();
+        if(email != NULL)
+                checkId();
 
         Intent intent = new Intent(LoginActivity.this, MapActivity.class);
         intent.putExtra("name", name);
@@ -235,7 +238,7 @@ public class LoginActivity extends AppCompatActivity {
     /* check id's existence in server*/
     public void checkId() {
         db = FirebaseFirestore.getInstance();
-        db.collection("Users").whereEqualTo("id", email).get()   // find id by global variable email in server
+        db.collection("Users").whereEqualTo("id", email).get()   // find id in server by global variable email
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
