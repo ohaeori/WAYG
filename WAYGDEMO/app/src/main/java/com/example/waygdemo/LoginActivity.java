@@ -32,6 +32,8 @@ enum Type{ NAVER, GOOGLE }
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static String email;
+
     private static final int RC_SIGN_IN = 100;
     /*naver login field*/
     public static OAuthLogin mOAuthLoginModule;
@@ -152,6 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject object = new JSONObject(result);
                 if (object.getString("resultcode").equals("00")) {
                     JSONObject jsonObject = new JSONObject(object.getString("response"));
+                    email = jsonObject.getString("email");
                     Move_on_MapActivity(jsonObject.getString("name"), Type.NAVER);
                 }
             } catch (Exception e) {
@@ -200,6 +203,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String name = account.getDisplayName();
+            email = account.getEmail();
             Move_on_MapActivity(name, Type.GOOGLE);
         } catch (ApiException e) {
         }
