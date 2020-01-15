@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,7 +18,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.OAuthLoginHandler;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
@@ -27,6 +35,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 enum Type{ NAVER, GOOGLE }
 
@@ -42,7 +52,9 @@ public class LoginActivity extends AppCompatActivity {
     /*Google login field*/
     SignInButton Google_Login;
     public static GoogleSignInClient mGoogleSignInClient;
-
+    /*Firestore access field*/
+    FirebaseFirestore db;
+    private static final String TAG = "DocSnippets";
     /* naver login handler */
     private OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {
         @Override
@@ -212,12 +224,56 @@ public class LoginActivity extends AppCompatActivity {
 
     /*move on MainActivity -> MapActivity*/
     private void Move_on_MapActivity(String name, Type t) {
-        LoginActivity.this.finish();
+        checkId();
 
         Intent intent = new Intent(LoginActivity.this, MapActivity.class);
         intent.putExtra("name", name);
         intent.putExtra("type", t.toString());
         startActivity(intent);
+    }
+
+    /* check id's existence in server*/
+    public void checkId() {
+        db = FirebaseFirestore.getInstance();
+        db.collection("Users").whereEqualTo("id", email).get()   // find id by global variable email in server
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().isEmpty()) {                          // if task which executed Query is empty??
+                                Toast myToast = Toast.makeText(LoginActivity.this, "아이디 생성", Toast.LENGTH_SHORT);
+                                myToast.show();
+                                Map<String, Object> map2 = new HashMap<>();
+                                map2.put("gradenum", 0);
+                                map2.put("gradesum", 0);
+                                map2.put("id", email);
+                                db.collection("Users").document(email)  // store id and initialize data because it was first login
+                                        .set(map2)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d(TAG, "DocumentSnapshot written with ID: ");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w(TAG, "Error adding document", e);
+                                            }
+                                        });
+                            } else {
+                                for (QueryDocumentSnapshot document : task.getResult()) {           //print text if there are data in server by email
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Toast myToast = Toast.makeText(LoginActivity.this, "아이디 이미 있음", Toast.LENGTH_SHORT);
+                                    myToast.show();
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+        LoginActivity.this.finish();
     }
 
 }

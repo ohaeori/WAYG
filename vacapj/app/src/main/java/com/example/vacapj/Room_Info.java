@@ -212,7 +212,7 @@ public void setGeopoint()
     Map<String,Object> mapS = new HashMap<>();		// initialize hash-map
     GeoPoint startCoor;
     String title_String;
-    startCoor = //좌표값
+    startCoor = //좌표값;
     mapS.put("coordinate",startCoor);
     mapS.put("title",title_String);
     
