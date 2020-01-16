@@ -17,9 +17,9 @@ public class ChatViewAdapter extends BaseAdapter {
     private Context mContext;
 
     public ChatViewAdapter(){ }
-    public ChatViewAdapter(Context context, ArrayList<_Message> arrayList){
+    public ChatViewAdapter(Context context){
         this.mContext = context;
-        this._messageList = arrayList;
+        this._messageList =  new ArrayList<_Message>();
     }
 
     @Override
@@ -48,10 +48,15 @@ public class ChatViewAdapter extends BaseAdapter {
         _Message _message = _messageList.get(position);
         Log.d("mytag", "in here...");
         holder = new ViewHolder();
+        mContext = parent.getContext();
 
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        convertView = inflater.inflate(_message.getRes(), parent, false);
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            convertView = inflater.inflate(_message.getRes(), parent, false);
+
+        }
 
         convertView.setTag(holder);
 
