@@ -77,8 +77,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private void addMessage(DataSnapshot dataSnapshot,ChatViewAdapter adapter) {// ArrayAdapter<String> adapter
         _Message _message = dataSnapshot.getValue(_Message.class);
-        //if(_message.getUserName().equals(USER_NAME)) _message.setRes(R.layout.right_row);
+        if(_message.getUserName().equals(USER_NAME)) adapter.setIsMe(true);
+        else adapter.setIsMe(false);
         adapter.addItem(_message.getUserName() , " : " + _message.getMessage());
+        chat_view.setAdapter(adapter);
     }
 
     private void removeMessage(DataSnapshot dataSnapshot, ChatViewAdapter adapter) {

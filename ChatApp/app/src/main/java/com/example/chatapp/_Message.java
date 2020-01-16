@@ -5,7 +5,8 @@ public class _Message {
 
     private String userName;
     private String message;
-    private int res=R.layout.left_row;
+    private String rowtext1;
+    private String rowtext2;
 
     public _Message() {
     }
@@ -31,7 +32,19 @@ public class _Message {
         this.message = message;
     }
 
-    public int getRes(){ return res; }
+    public void setRowtext1(){
+        rowtext1 = userName+" "+message;
+    }
+    public void setRowtext2(){
+        rowtext2 = message;
+    }
 
-    public void setRes(int res) { this.res = res; }
+    public String getRowtext1(){
+        return rowtext1;
+    }
+
+    public String getRowtext2(){
+        return rowtext2;
+    }
+
 }
