@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.ChildEventListener;
@@ -20,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -76,52 +79,53 @@ public class MainActivity extends AppCompatActivity {
                     ToastMessage("USER NAME을 입력해주세요");
                     return;
                 }
+
                 /*check num of participants... not over 4*/
-                databaseReference.child("chat").child(adapter.getItem(position).toString()).addChildEventListener(new ChildEventListener() {
+                databaseReference.child("chat").child(adapter.getItem(position)).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        adapter.add(dataSnapshot.getKey());
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                            ChatDBS chatdbs = snapshot.getValue(ChatDBS.class);
+                            String key = snapshot.getKey();
+
+                            /*Dialog display*/
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle(adapter.getItem(position) + "에 입장하시겠습니까?").setMessage(chatdbs.getParticipantsList()).setCancelable(false);
+                            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if(chatdbs.getNum_of_user()==4){
+                                        ToastMessage("정원초과입니다.");
+                                        return;
+                                    } else {
+                                        chatdbs.addParticipants(user_name.getText().toString());
+                                        Log.d("mytagkey", key);
+                                        DatabaseReference keyRef = databaseReference.child("chat").child(adapter.getItem(position)).child(key);
+                                        keyRef.setValue(chatdbs);
+
+                                        Move_on_ChatActivity(adapter.getItem(position), user_name.getText().toString()
+                                                , "false");
+                                    }
+                                }
+                            });
+                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+
+                            break;
+                        }
                     }
 
                     @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
                 });
-
-                /*Dialog display*/
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setMessage(adapter.getItem(position) + "에 입장하시겠습니까?").setCancelable(false);
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Move_on_ChatActivity(adapter.getItem(position).toString(), user_name.getText().toString()
-                                , "false");
-                    }
-                });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
             }
         });
 

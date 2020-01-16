@@ -1,5 +1,7 @@
 package com.example.chatapp;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 /*realtime DataBase Chating room Structure*/
 public class ChatDBS {
@@ -32,12 +34,7 @@ public class ChatDBS {
         return this.departure;
     }
 
-    public String getParticipants(){
-        String all_participants = new String();
-        for(String participant : participants)
-            all_participants += participant + ", ";
-        return all_participants.substring(0, all_participants.length()-2);
-    }
+    public ArrayList<String> getParticipants() { return participants; }
 
     public void addParticipants(String participant){
         participants.add(participant);
@@ -45,5 +42,12 @@ public class ChatDBS {
 
     public int getNum_of_user(){
         return participants.size();
+    }
+
+    public String getParticipantsList(){
+        String all_participants = new String();
+        for(String participant : participants)
+            all_participants += participant + ", ";
+        return all_participants.substring(0, all_participants.length()-2);
     }
 }
