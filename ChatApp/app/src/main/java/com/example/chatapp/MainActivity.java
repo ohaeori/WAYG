@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText room_name, user_name, departure, arrival;
@@ -94,18 +96,18 @@ public class MainActivity extends AppCompatActivity {
                             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    if(chatdbs.getNum_of_user()==4){
-                                        ToastMessage("정원초과입니다.");
-                                        return;
-                                    } else {
-                                        chatdbs.addParticipants(user_name.getText().toString());
-                                        Log.d("mytagkey", key);
-                                        DatabaseReference keyRef = databaseReference.child("chat").child(adapter.getItem(position)).child(key);
-                                        keyRef.setValue(chatdbs);
+//                                    if(chatdbs.getNum_of_user()==4){
+//                                        ToastMessage("정원초과입니다.");
+//                                        return;
+//                                    } else {
+//                                        chatdbs.addParticipants(user_name.getText().toString());
+
+//                                        DatabaseReference keyRef = databaseReference.child("chat").child(adapter.getItem(position)).child(key);
+//                                        keyRef.setValue(chatdbs);
 
                                         Move_on_ChatActivity(adapter.getItem(position), user_name.getText().toString()
                                                 , "false");
-                                    }
+                                    //}
                                 }
                             });
                             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
