@@ -14,33 +14,13 @@
         tools:layout_editor_absoluteY="16dp">
 
         <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="changeMode"
-            android:text="ModeChange" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:onClick="changeCamera"
-            android:text="CameraChange" />
-
-        <Button
             android:id="@+id/markerBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
             android:onClick="markerAdd"
             android:text="MarkerAdd" />
-        <Button
-            android:id="@+id/plusBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
-            android:onClick="plus"
-            android:text="MarkerPlus" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -73,6 +53,7 @@
             android:clickable="true"
             android:focusable="true"
             android:text="logout"
+            android:onClick="LogoutOnClick"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 

@@ -61,38 +61,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<Marker> markerList = new ArrayList<Marker>(); //list of mark
     ArrayList<String> titleList = new ArrayList<String>(); //list of title
     NaverMap Map;
-    int mapMode = -1;
     int addMode = -1;
     private FusedLocationSource locationSource;
 
     /*for Logout field*/
+    Bundle bundle;
     TextView TextView_name;
-    Button logout_Button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        TextView_name = findViewById(R.id.TextView_name);
-        logout_Button = findViewById(R.id.logout);
-
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        String name = bundle.getString("name");
-        final String type = bundle.getString("type");
-
-        TextView_name.setText(name);
-
-        /*logout Button event ~ */
-        logout_Button.setClickable(true);
-        logout_Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                show_Dialog(v, type);
-            }
-        });
-        /*logout Button event fin*/
+        setMyname();
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -111,6 +92,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //make FusedLocationProvider
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
     }
+
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
@@ -131,21 +113,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         naverMap.setOnMapClickListener(this);
     }
 
-    //change map mode
-    public void changeMode(View v) {
-        if (mapMode > 0) Map.setMapType(NaverMap.MapType.Basic);
-        if (mapMode < 0) Map.setMapType(NaverMap.MapType.Navi);
-        mapMode *= -1;
-    }
-
-    //change camera
-    public void changeCamera(View v) {
-        //LocationOverlay locationOverlay = Map.getLocationOverlay(); //
-        //Map.moveCamera(CameraUpdate.scrollTo(locationOverlay.getPosition())); get current location LatLng
-        Map.moveCamera(CameraUpdate.scrollTo(new LatLng(35.8796713, 128.6262873)).animate(CameraAnimation.Easing));
-    }
-
-
     //permission
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -158,128 +125,61 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 requestCode, permissions, grantResults);
     }
 
-    //set marker example
-    public void setMarker(NaverMap naverMap) {
-        Marker marker = new Marker();
-        marker.setPosition(new LatLng(35.8796713, 128.6262873));
-        marker.setMap(naverMap);
-
-        Button button = (Button) findViewById(R.id.markerBtn);
-        button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                marker.setPosition(new LatLng(35.8799713, 128.6262873));
-                marker.setIcon(MarkerIcons.BLUE);
-                //marker.setMap(null);
-                marker.setWidth(Marker.SIZE_AUTO);
-                marker.setHeight(Marker.SIZE_AUTO);
-            }
-        });
-
-
-        //set infoWindow
+    //setInfoWindow
+    public InfoWindow setInfoWindow(){
         InfoWindow infoWindow = new InfoWindow();
+
+        //set location's chat roon count
         infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(this) {
             @NonNull
             @Override
             public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                return "정보 창 내용";
+                return "현제 채팅방 수 ";
             }
         });
 
-        infoWindow.open(marker);
-
-        naverMap.setOnMapClickListener((coord, point) -> {
-            infoWindow.close();
-        });
-
-        Overlay.OnClickListener listener = overlay -> {
-
-            if (marker.getInfoWindow() == null) {
-                // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-                infoWindow.open(marker);
-            } else {
-                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                infoWindow.close();
-            }
-
-            return true;
-        };
-
-        marker.setOnClickListener(listener);
-
+        //set infoWindow OnClickListener
         Overlay.OnClickListener listener1 = overlay -> {
-            Toast.makeText(MapActivity.this, "!!!!!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapActivity.this,""+infoWindow.getMarker().getPosition(),Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
+            LatLng coordinate = infoWindow.getMarker().getPosition();
+            intent.putExtra("coor", coordinate);
+            startActivity(intent);
             return true;
         };
-
         infoWindow.setOnClickListener(listener1);
 
+        return infoWindow;
     }
 
+    //set marker
     public void setMarkerList(NaverMap naverMap) {
-
-
-        titleList.add("동대구역 1번 출구");
-
-        coor.add(new LatLng(35.8799713, 128.6241873));
-
-        Toast.makeText(MapActivity.this,""+titleList.size(),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MapActivity.this,""+titleList.size(),Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < coor.size(); i++) {
+            InfoWindow infoWindow = setInfoWindow();
             Marker marker = new Marker();
-            InfoWindow infoWindow = new InfoWindow();
 
-            // infowindow open
+            // infowindow open and close
             Overlay.OnClickListener listener = overlay -> {
-                if (marker.getInfoWindow() == null) {
-                    // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-                    infoWindow.open(marker);
-                } else {
-                    // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                    infoWindow.close();
-                }
-
+                if (marker.getInfoWindow() == null) infoWindow.open(marker);
+                else infoWindow.close();
                 return true;
             };
-
             marker.setOnClickListener(listener);
 
-            //set marker coordinate
-
+            //set marker coordinate and others
             marker.setPosition(coor.get(i));
             marker.setCaptionText(titleList.get(i));
-            marker.setCaptionColor(Color.BLUE);
+            marker.setSubCaptionColor(Color.RED);
+            marker.setSubCaptionHaloColor(Color.YELLOW);
+            marker.setSubCaptionTextSize(10);
+
+
+            //add to List
             markerList.add(marker);
-
             markerList.get(i).setMap(naverMap);
-
-            //set marker's infoWindow
-            int a = i + 2;
-
-            infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(this) {
-                @NonNull
-                @Override
-                public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                    return "현제 채팅방 수 " + a;
-                }
-            });
-            infoWindow.open(markerList.get(i));
-
-            Overlay.OnClickListener listener1 = overlay -> {
-                //Toast.makeText(Main2Activity.this,""+infoWindow.getMarker().getPosition(),Toast.LENGTH_SHORT).show();
-
-//                Intent intent = new Intent(Main2Activity.this, Main3Activity.class);
-//                String title = "" + infoWindow.getMarker().getPosition();
-//                intent.putExtra("title", title);
-//
-//                startActivity(intent);
-
-                return true;
-            };
-
-            infoWindow.setOnClickListener(listener1);
-
         }
     }
 
@@ -299,30 +199,53 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (markerList.get(i).hasInfoWindow()) markerList.get(i).getInfoWindow().close();
         }
 
+        //make start location
         if (addMode > 0) {
             Marker marker1 = new Marker();
             marker1.setPosition(latLng);
             marker1.setMap(Map);
-            marker1.setSubCaptionText("????????");
-            marker1.setSubCaptionColor(Color.RED);
-            marker1.setSubCaptionHaloColor(Color.YELLOW);
-            marker1.setSubCaptionTextSize(10);
 
-            InfoWindow infoWindow1 = new InfoWindow();
-            infoWindow1.setAdapter(new InfoWindow.DefaultTextAdapter(this) {
-                @NonNull
-                @Override
-                public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                    return "!!!!!!!!!!!!";
-                }
-            });
+            //set marker add dialog
+            AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+            alt_bld.setMessage("여기서 출발 하시겠습니까?").setCancelable(false)
+                    .setPositiveButton("네",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(MapActivity.this,"화면전환",Toast.LENGTH_SHORT).show();
+                                    //startActivity(new Intent(MapActivity.this, LoginActivity.class));
+                                }
+                            }).setNegativeButton("아니오",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                            marker1.setMap(null);
+                        }
+                    });
+            AlertDialog alert = alt_bld.create();
+            alert.setTitle("출발지 생성");
+            alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
+            alert.show();
 
-            infoWindow1.open(marker1);
+            addMode *= -1;
         }
-
     }
 
-    //Dialog display
+    //setMyname
+    public void setMyname(){
+        TextView_name = findViewById(R.id.TextView_name);
+        Intent intent = getIntent();
+        bundle = intent.getExtras();
+        String name = bundle.getString("name");// 다음 화면으로 넘겨야함
+        TextView_name.setText(name);
+    }
+
+    /*logout Button event ~ */
+    public void LogoutOnClick(View v){
+        final String type = bundle.getString("type");
+        show_Dialog(v, type);
+    }
+
+    //Logout Dialog display
     private void show_Dialog(View v, final String t) {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(v.getContext());
         alt_bld.setMessage("로그아웃 하시겠습니까?").setCancelable(false)
@@ -373,11 +296,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setMarkerList(Map);
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
-
+    //upload marker's info
     public void setGeopoint(String title, GeoPoint coordinate){
         Map<String,Object> mapS = new HashMap<>();		// initialize hash-map
         mapS.put("coordinate",coordinate);
@@ -400,14 +319,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
     }
 
+    //refresh marker info
     public void refresh(View v){
         db.collection("Location").get().addOnCompleteListener(this);
-    }
-
-
-
-    public void plus(View v){
-        setGeopoint("동대구역 3번 출구",new GeoPoint(35.8820713, 128.6262873));
-        setGeopoint("동대구역 5번 출구",new GeoPoint(35.8799713, 128.6262873));
     }
 }
