@@ -228,7 +228,7 @@ public class LoginActivity extends AppCompatActivity {
     private void Move_on_MapActivity(String name, Type t) {
         if(email != NULL)
                 checkId();
-
+        else LoginActivity.this.finish();
         Intent intent = new Intent(LoginActivity.this, MapActivity.class);
         intent.putExtra("name", name);
         intent.putExtra("type", t.toString());
