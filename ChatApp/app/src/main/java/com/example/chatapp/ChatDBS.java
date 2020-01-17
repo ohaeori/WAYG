@@ -1,7 +1,5 @@
 package com.example.chatapp;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 /*realtime DataBase Chating room Structure*/
 public class ChatDBS {
@@ -10,7 +8,6 @@ public class ChatDBS {
     private String departure;
 
     public ChatDBS(){}
-
     public ChatDBS(String username, String arrival, String departure){
         participants = new ArrayList<>();
         participants.add(username);

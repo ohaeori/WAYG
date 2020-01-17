@@ -75,7 +75,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void addMessage(DataSnapshot dataSnapshot,ChatViewAdapter adapter) {// ArrayAdapter<String> adapter
+    private void addMessage(DataSnapshot dataSnapshot,ChatViewAdapter adapter) {
         _Message _message = dataSnapshot.getValue(_Message.class);
         if(_message.getUserName().equals(USER_NAME)) adapter.setIsMe(true);
         else adapter.setIsMe(false);
@@ -90,9 +90,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void openChat(String chatName) {
         // 리스트 어댑터 생성 및 세팅
-        //final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
-
-        final ChatViewAdapter adapter = new ChatViewAdapter(this);
+        final ChatViewAdapter adapter = new ChatViewAdapter();
         chat_view.setAdapter(adapter);
 
         // 데이터 받아오기 및 어댑터 데이터 추가 및 삭제 등..리스너 관리

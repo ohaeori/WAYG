@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.renderscript.Sampler;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,20 +72,19 @@ public class MainActivity extends AppCompatActivity {
         final ArrayAdapter<String> adapter
                 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
         chat_list.setAdapter(adapter);
-
         /*ListView Click Event*/
         chat_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
+                boolean display = true;
                 if (user_name.getText().toString().equals("")) {
                     ToastMessage("USER NAME을 입력해주세요");
                     return;
                 }
-
                 /*check num of participants... not over 4*/
                 databaseReference.child("chat").child(adapter.getItem(position)).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    public void onDataChange(DataSnapshot dataSnapshot) {
                         for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
                             ChatDBS chatdbs = snapshot.getValue(ChatDBS.class);
                             String key = snapshot.getKey();
@@ -96,18 +95,25 @@ public class MainActivity extends AppCompatActivity {
                             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-//                                    if(chatdbs.getNum_of_user()==4){
-//                                        ToastMessage("정원초과입니다.");
-//                                        return;
-//                                    } else {
-//                                        chatdbs.addParticipants(user_name.getText().toString());
-
-//                                        DatabaseReference keyRef = databaseReference.child("chat").child(adapter.getItem(position)).child(key);
-//                                        keyRef.setValue(chatdbs);
-
-                                        Move_on_ChatActivity(adapter.getItem(position), user_name.getText().toString()
-                                                , "false");
-                                    //}
+                                    boolean is_newParticipant = true;
+                                    for(String participant : chatdbs.getParticipants()){
+                                        if(participant.equals(user_name.getText().toString()))
+                                            is_newParticipant = false;
+                                    }
+                                    if(is_newParticipant){//if this user is new participant
+                                        if(chatdbs.getNum_of_user()==4) {
+                                            ToastMessage("정원초과입니다.");
+                                            return;
+                                        }
+                                        else {
+                                            chatdbs.addParticipants(user_name.getText().toString());//add participant
+                                            DatabaseReference keyRef = databaseReference.child("chat").
+                                                    child(adapter.getItem(position)).child(key);
+                                            keyRef.setValue(chatdbs);
+                                        }
+                                    }
+                                    Move_on_ChatActivity(adapter.getItem(position),
+                                            user_name.getText().toString(), "false");
                                 }
                             });
                             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -118,11 +124,9 @@ public class MainActivity extends AppCompatActivity {
                             });
                             AlertDialog alertDialog = builder.create();
                             alertDialog.show();
-
                             break;
                         }
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 

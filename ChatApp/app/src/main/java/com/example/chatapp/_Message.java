@@ -5,12 +5,10 @@ public class _Message {
 
     private String userName;
     private String message;
-    private String rowtext1;
-    private String rowtext2;
+    private String lefttext;
+    private String righttext;
 
-    public _Message() {
-    }
-
+    public _Message() { }
     public _Message(String userName, String message) {
         this.userName = userName;
         this.message = message;
@@ -32,19 +30,19 @@ public class _Message {
         this.message = message;
     }
 
-    public void setRowtext1(){
-        rowtext1 = userName+" "+message;
-    }
-    public void setRowtext2(){
-        rowtext2 = message;
+    public String getLefttext(){
+        return lefttext;
     }
 
-    public String getRowtext1(){
-        return rowtext1;
+    public void setLefttext(){
+        lefttext = userName+" "+message;
     }
 
-    public String getRowtext2(){
-        return rowtext2;
+    public String getRighttext(){
+        return righttext;
     }
 
+    public void setRighttext(){
+        righttext = message;
+    }
 }
