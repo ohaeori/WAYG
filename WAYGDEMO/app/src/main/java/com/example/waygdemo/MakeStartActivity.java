@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.naver.maps.geometry.LatLng;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,22 +38,18 @@ public class MakeStartActivity extends AppCompatActivity {
     String end_String;
     String start_String;
     String name_String;
-    static String email_String;
+    String email_String;
     GeoPoint startPoint;
     GeoPoint endPoint;
+    Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_start);
 
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        /*
-        이부분에 전 액티비티에서 넘겨준 사용자이메일, 위경도 값을 저장해야함
-        email_String = bundle.getString("EMAIL");
-        startPoint =
-        */
+        getMyIntent();
+
         Ldb = FirebaseFirestore.getInstance();
         input_end = findViewById(R.id.ed_end);      //edittext 와 XML 을 연결
         input_time = findViewById(R.id.ed_time);
@@ -79,8 +76,7 @@ public class MakeStartActivity extends AppCompatActivity {
                  *   return;
                  * }
                  * */
-                String mail_String = "test@test.com";               //사용자 메일정보. 인텐트로 넘긴걸 씀 여기선 테스트로 정적선언
-                //GeoPoint geoPoint = new GeoPoint(35.7,128.7);   //핑 찍은 곳의 위경도값. 여긴 정적이지만 startPoint 값 써야함
+
                 String docName = Double.toString(startPoint.getLatitude());
                 docName = docName +","+Double.toString(startPoint.getLongitude());
                 time_String = input_time.getText().toString();      //edittext에 입력한 문자열을 전달
@@ -98,7 +94,7 @@ public class MakeStartActivity extends AppCompatActivity {
                 room.put("time", time_String);
                 room.put("dutch", pay_String);
                 room.put("title", end_String);
-                room.put("member", Arrays.asList(mail_String));
+                room.put("member", Arrays.asList(email_String));
                 room.put("memnum",1);
                 //최초 시작점 db에 생성함.
                 Ldb.collection("Location").document(docName)
@@ -132,5 +128,12 @@ public class MakeStartActivity extends AppCompatActivity {
                         });
             }
         });
+    }
+    public void getMyIntent(){
+        Intent intent = getIntent();
+        bundle = intent.getExtras();
+        startPoint = new GeoPoint(bundle.getDouble("lat"),bundle.getDouble("lng"));
+        email_String = bundle.getString("email");
+
     }
 }

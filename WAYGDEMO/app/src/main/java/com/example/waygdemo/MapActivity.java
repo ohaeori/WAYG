@@ -170,8 +170,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     Intent intent = new Intent(MapActivity.this,MakeStartActivity.class);
-                                    intent.putExtra("latlng",""+latLng);
+                                    intent.putExtra("lat",latLng.latitude);
+                                    intent.putExtra("lng",latLng.longitude);
                                     intent.putExtra("email",email);
+                                    System.out.println(email);
                                     startActivity(new Intent(MapActivity.this, MakeStartActivity.class));
                                 }
                             }).setNegativeButton("아니오",
