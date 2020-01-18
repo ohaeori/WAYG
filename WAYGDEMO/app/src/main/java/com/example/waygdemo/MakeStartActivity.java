@@ -135,6 +135,7 @@ public class MakeStartActivity extends AppCompatActivity {
                 intent.putExtra("departure", departure);
                 intent.putExtra("arrival", arrival);
                 intent.putExtra("is_create", "true");
+                finish();
                 startActivity(intent);
             }
         });
