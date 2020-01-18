@@ -13,8 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RoomInfoActivity"></activity>
-        <!-- [naveroauthlogin][start] for naver ID login -->
+        <activity android:name=".MakeStartActivity"></activity>
+        <activity android:name=".RoomInfoActivity" /> <!-- [naveroauthlogin][start] for naver ID login -->
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
@@ -33,7 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapActivity"></activity>
+        <activity android:name=".MapActivity" />
     </application>
 
 </manifest>

@@ -71,6 +71,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     Bundle bundle;
     TextView TextView_name;
 
+    String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,8 +90,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         TextView_name = findViewById(R.id.TextView_name);
         Intent intent = getIntent();
         bundle = intent.getExtras();
-        String name = bundle.getString("email");// 다음 화면으로 넘겨야함
-        TextView_name.setText(name);
+        email = bundle.getString("email");// 다음 화면으로 넘겨야함
+        TextView_name.setText(email);
     }
 
     //make option(start knu,zoom 14)
@@ -168,8 +169,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .setPositiveButton("네",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Toast.makeText(MapActivity.this,"화면전환",Toast.LENGTH_SHORT).show();
-                                    //startActivity(new Intent(MapActivity.this, LoginActivity.class));
+                                    Intent intent = new Intent(MapActivity.this,MakeStartActivity.class);
+                                    intent.putExtra("latlng",""+latLng);
+                                    intent.putExtra("email",email);
+                                    startActivity(new Intent(MapActivity.this, MakeStartActivity.class));
                                 }
                             }).setNegativeButton("아니오",
                     new DialogInterface.OnClickListener() {
