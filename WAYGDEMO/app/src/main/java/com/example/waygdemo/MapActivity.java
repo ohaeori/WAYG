@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.solver.GoalRow;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +23,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -62,6 +64,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<String> titleList = new ArrayList<String>(); //list of title
     NaverMap Map;
     int addMode = -1;
+    String roomNumber;
     private FusedLocationSource locationSource;
 
     /*for Logout field*/
@@ -194,7 +197,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //Toast.makeText(MapActivity.this,""+titleList.size(),Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < coor.size(); i++) {
-            InfoWindow infoWindow = setInfoWindow();
+            InfoWindow infoWindow = setInfoWindow(i);
             Marker marker = new Marker();
 
             // infowindow open and close
@@ -220,15 +223,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     //setInfoWindow
-    public InfoWindow setInfoWindow(){
+    public InfoWindow setInfoWindow(int i){
         InfoWindow infoWindow = new InfoWindow();
 
         //set location's chat roon count
+        GeoPoint aa= new GeoPoint(coor.get(i).latitude,coor.get(i).longitude);
+        getRoomNumber(aa);
         infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(this) {
             @NonNull
             @Override
             public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                return "현제 채팅방 수 ";
+                return "현제 채팅방 수 "+roomNumber;
             }
         });
 
@@ -246,6 +251,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         return infoWindow;
     }
+
+    public void getRoomNumber(GeoPoint point) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();     //위경도 값 받아서 문서 이름 찾는데 씀
+        String docName = Double.toString(point.getLatitude())+","+Double.toString(point.getLongitude());
+        db.collection("Location").document(docName)
+                .get()
+                .addOnCompleteListener(getNum);
+    }
+
+    private  OnCompleteListener getNum = new OnCompleteListener<DocumentSnapshot>() {
+        @Override
+        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    Map<String,Object> map = map = document.getData();
+                    roomNumber = map.get("cnt").toString();
+                    // 이 roomNumber 를 쓰면 됨. 대신 이 함수내에서밖에 못씀.
+                } else {
+                    Log.d(TAG, "No such document");
+                }
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+            }
+        }
+    };
 
     //refresh marker info
     public void refresh(View v){
