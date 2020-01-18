@@ -54,8 +54,8 @@ public class MakeStartActivity extends AppCompatActivity {
         input_pay = findViewById(R.id.ed_pay);
         input_start = findViewById(R.id.ed_start);
         input_name = findViewById(R.id.ed_name);
-        makeRoom = findViewById(R.id.findMap);
-        getEnd = findViewById(R.id.upload);
+        makeRoom = findViewById(R.id.upload);
+        getEnd = findViewById(R.id.findMap);
 
         getEnd.setOnClickListener(new Button.OnClickListener(){     //목적지 위치 지도에서 받기. 목적지의 위경도값 endPoint 에 저장
             @Override
@@ -87,54 +87,54 @@ public class MakeStartActivity extends AppCompatActivity {
                 location.put("coordinate",startPoint);
                 location.put("cnt",1);
 
-                Map<String, Object> room = new HashMap<>();         // Map 의 형태로 DB에 저장
-                room.put("destination",endPoint);
-                room.put("time", time_String);
-                room.put("dutch", pay_String);
-                room.put("title", arrival);
-                room.put("member", Arrays.asList(useremail));
-                room.put("memnum",1);
-                //최초 시작점 db에 생성함.
-                Ldb.collection("Location").document(docName)
-                        .set(location)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot written with ID: ");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
-                            }
-                        });
-                // 이러면 DB 에서 순서가 안꼬일지 체크 해봐야함
-                Rdb.collection("Location").document(docName).collection("Rooms").document(roomname)  //이경로에 저장함.
-                        .set(room)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot written with ID: ");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
-                            }
-                        });
+//                Map<String, Object> room = new HashMap<>();         // Map 의 형태로 DB에 저장
+//                room.put("destination",endPoint);
+//                room.put("time", time_String);
+//                room.put("dutch", pay_String);
+//                room.put("title", arrival);
+//                room.put("member", Arrays.asList(useremail));
+//                room.put("memnum",1);
+//                //최초 시작점 db에 생성함.
+//                Ldb.collection("Location").document(docName)
+//                        .set(location)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                Log.d(TAG, "DocumentSnapshot written with ID: ");
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.w(TAG, "Error adding document", e);
+//                            }
+//                        });
+//                // 이러면 DB 에서 순서가 안꼬일지 체크 해봐야함
+//                Rdb.collection("Location").document(docName).collection("Rooms").document(roomname)  //이경로에 저장함.
+//                        .set(room)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                Log.d(TAG, "DocumentSnapshot written with ID: ");
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.w(TAG, "Error adding document", e);
+//                            }
+//                        });
 
                 /*
                     send intent
                     room_name, user_name, departure, arrival
                 */
-                Log.d("mytag", "here");
                 Intent intent = new Intent(MakeStartActivity.this, ChatActivity.class);
                 intent.putExtra("roomName", roomname);
                 intent.putExtra("userEmail", useremail);
                 intent.putExtra("departure", departure);
                 intent.putExtra("arrival", arrival);
+                intent.putExtra("is_create", "true");
                 startActivity(intent);
             }
         });
