@@ -174,7 +174,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     intent.putExtra("lng",latLng.longitude);
                                     intent.putExtra("email",email);
                                     System.out.println(email);
-                                    startActivity(new Intent(MapActivity.this, MakeStartActivity.class));
+                                    startActivity(intent);
                                 }
                             }).setNegativeButton("아니오",
                     new DialogInterface.OnClickListener() {
