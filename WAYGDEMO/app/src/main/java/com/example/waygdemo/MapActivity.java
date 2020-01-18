@@ -73,11 +73,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        setMyname();
+        setMyEmail();
 
+        setStartLocation();
+
+        //make FusedLocationProvider
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
+    }
+
+    // show my email
+    public void setMyEmail(){
+        TextView_name = findViewById(R.id.TextView_name);
+        Intent intent = getIntent();
+        bundle = intent.getExtras();
+        String name = bundle.getString("email");// 다음 화면으로 넘겨야함
+        TextView_name.setText(name);
+    }
+
+    //make option(start knu,zoom 14)
+    public void setStartLocation(){
         FragmentManager fm = getSupportFragmentManager();
-
-        //make option(start knu,zoom 14)
         NaverMapOptions options = new NaverMapOptions()
                 .camera(new CameraPosition(new LatLng(35.8888403, 128.608111), 14));
 
@@ -88,9 +103,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         mapFragment.getMapAsync(this);
-
-        //make FusedLocationProvider
-        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
     }
 
 
@@ -113,44 +125,68 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         naverMap.setOnMapClickListener(this);
     }
 
-    //permission
+    //get Location info from server //db.collection("Location").get().addOnCompleteListener(this);
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (locationSource.onRequestPermissionsResult(
-                requestCode, permissions, grantResults)) {
-            return;
+    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        if (task.isSuccessful()) {
+            coor.clear();
+            titleList.clear();
+            for (QueryDocumentSnapshot document : task.getResult()) {
+                Log.d(TAG, document.getId() + " => " + document.getData());
+                java.util.Map<String, Object> mapG = document.getData();
+                GeoPoint cur = (GeoPoint) mapG.get("coordinate");
+                String title =mapG.get("title").toString();
+
+                coor.add(new LatLng(cur.getLatitude(),cur.getLongitude()));
+                titleList.add(title);
+            }
+        } else {
+            Log.d(TAG, "Error getting documents: ", task.getException());
         }
-        super.onRequestPermissionsResult(
-                requestCode, permissions, grantResults);
+        setMarkerList(Map);
     }
 
-    //setInfoWindow
-    public InfoWindow setInfoWindow(){
-        InfoWindow infoWindow = new InfoWindow();
+    @Override //set mapClick
+    public void onMapClick(@NonNull PointF pointF, @NonNull LatLng latLng) {
+        //close all marker's info
+        for (int i = 0; i < markerList.size(); i++) {
+            if (markerList.get(i).hasInfoWindow()) markerList.get(i).getInfoWindow().close();
+        }
 
-        //set location's chat roon count
-        infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(this) {
-            @NonNull
-            @Override
-            public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                return "현제 채팅방 수 ";
-            }
-        });
+        //make start location
+        if (addMode > 0) {
+            Marker marker = new Marker();
+            marker.setPosition(latLng);
+            marker.setMap(Map);
 
-        //set infoWindow OnClickListener
-        Overlay.OnClickListener listener1 = overlay -> {
-            Toast.makeText(MapActivity.this,""+infoWindow.getMarker().getPosition(),Toast.LENGTH_SHORT).show();
+            //set marker add dialog
+            AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+            alt_bld.setMessage("여기서 출발 하시겠습니까?").setCancelable(false)
+                    .setPositiveButton("네",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(MapActivity.this,"화면전환",Toast.LENGTH_SHORT).show();
+                                    //startActivity(new Intent(MapActivity.this, LoginActivity.class));
+                                }
+                            }).setNegativeButton("아니오",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                            marker.setMap(null);
+                        }
+                    });
+            AlertDialog alert = alt_bld.create();
+            alert.setTitle("출발지 생성");
+            alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
+            alert.show();
 
-            Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
-            LatLng coordinate = infoWindow.getMarker().getPosition();
-            intent.putExtra("coor", coordinate);
-            startActivity(intent);
-            return true;
-        };
-        infoWindow.setOnClickListener(listener1);
+            addMode *= -1;
+        }
+    }
 
-        return infoWindow;
+
+    public void markerAdd(View v) {
+        addMode *= -1;
     }
 
     //set marker
@@ -183,60 +219,60 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    public void search(View v) {
+    //setInfoWindow
+    public InfoWindow setInfoWindow(){
+        InfoWindow infoWindow = new InfoWindow();
 
+        //set location's chat roon count
+        infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(this) {
+            @NonNull
+            @Override
+            public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                return "현제 채팅방 수 ";
+            }
+        });
+
+        //set infoWindow OnClickListener
+        Overlay.OnClickListener listener1 = overlay -> {
+            Toast.makeText(MapActivity.this,""+infoWindow.getMarker().getPosition(),Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
+            LatLng coordinate = infoWindow.getMarker().getPosition();
+            intent.putExtra("coor", coordinate);
+            startActivity(intent);
+            return true;
+        };
+        infoWindow.setOnClickListener(listener1);
+
+        return infoWindow;
     }
 
-    public void markerAdd(View v) {
-        addMode *= -1;
+    //refresh marker info
+    public void refresh(View v){
+        db.collection("Location").get().addOnCompleteListener(this);
     }
 
-    @Override
-    public void onMapClick(@NonNull PointF pointF, @NonNull LatLng latLng) {
+    //upload marker's info
+    public void setGeopoint(String title, GeoPoint coordinate){
+        Map<String,Object> mapS = new HashMap<>();		// initialize hash-map
+        mapS.put("coordinate",coordinate);
+        mapS.put("title",title);
+        mapS.put("cnt",1);
 
-        //close all marker's info
-        for (int i = 0; i < markerList.size(); i++) {
-            if (markerList.get(i).hasInfoWindow()) markerList.get(i).getInfoWindow().close();
-        }
-
-        //make start location
-        if (addMode > 0) {
-            Marker marker1 = new Marker();
-            marker1.setPosition(latLng);
-            marker1.setMap(Map);
-
-            //set marker add dialog
-            AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-            alt_bld.setMessage("여기서 출발 하시겠습니까?").setCancelable(false)
-                    .setPositiveButton("네",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    Toast.makeText(MapActivity.this,"화면전환",Toast.LENGTH_SHORT).show();
-                                    //startActivity(new Intent(MapActivity.this, LoginActivity.class));
-                                }
-                            }).setNegativeButton("아니오",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                            marker1.setMap(null);
-                        }
-                    });
-            AlertDialog alert = alt_bld.create();
-            alert.setTitle("출발지 생성");
-            alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
-            alert.show();
-
-            addMode *= -1;
-        }
-    }
-
-    //setMyname
-    public void setMyname(){
-        TextView_name = findViewById(R.id.TextView_name);
-        Intent intent = getIntent();
-        bundle = intent.getExtras();
-        String name = bundle.getString("name");// 다음 화면으로 넘겨야함
-        TextView_name.setText(name);
+        db.collection("Location")
+                .add(mapS)								//upload at server mapS's data by auto ID
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
     }
 
     /*logout Button event ~ */
@@ -275,52 +311,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         alert.show();
     }
 
-    //get Location info from server
+    //permission
     @Override
-    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-        if (task.isSuccessful()) {
-            coor.clear();
-            titleList.clear();
-            for (QueryDocumentSnapshot document : task.getResult()) {
-                Log.d(TAG, document.getId() + " => " + document.getData());
-                java.util.Map<String, Object> mapG = document.getData();
-                GeoPoint cur = (GeoPoint) mapG.get("coordinate");
-                String title =mapG.get("title").toString();
-
-                coor.add(new LatLng(cur.getLatitude(),cur.getLongitude()));
-                titleList.add(title);
-            }
-        } else {
-            Log.d(TAG, "Error getting documents: ", task.getException());
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (locationSource.onRequestPermissionsResult(
+                requestCode, permissions, grantResults)) {
+            return;
         }
-        setMarkerList(Map);
-    }
-
-    //upload marker's info
-    public void setGeopoint(String title, GeoPoint coordinate){
-        Map<String,Object> mapS = new HashMap<>();		// initialize hash-map
-        mapS.put("coordinate",coordinate);
-        mapS.put("title",title);
-        mapS.put("cnt",1);
-
-        db.collection("Location")
-                .add(mapS)								//upload at server mapS's data by auto ID
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-    }
-
-    //refresh marker info
-    public void refresh(View v){
-        db.collection("Location").get().addOnCompleteListener(this);
+        super.onRequestPermissionsResult(
+                requestCode, permissions, grantResults);
     }
 }

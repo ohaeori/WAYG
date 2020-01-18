@@ -44,8 +44,6 @@ enum Type{ NAVER, GOOGLE }
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static String email;
-
     private static final int RC_SIGN_IN = 100;
     /*naver login field*/
     public static OAuthLogin mOAuthLoginModule;
@@ -63,16 +61,6 @@ public class LoginActivity extends AppCompatActivity {
         public void run(boolean success) {
             if (success) {
                 final String accessToken = mOAuthLoginModule.getAccessToken(mContext);  //user info
-                String refreshToken = mOAuthLoginModule.getRefreshToken(mContext);
-                long expiresAt = mOAuthLoginModule.getExpiresAt(mContext);
-                String tokenType = mOAuthLoginModule.getTokenType(mContext);
-                /*
-                 * mOauthAT.setText(accessToken);
-                 * mOauthRT.setText(refreshToken);
-                 * mOauthExpires.setText(String.valueOf(expiresAt));
-                 * mOauthTokenType.setText(tokenType);
-                 * mOAuthState.setText(mOAuthLoginModule.getState(mContext).toString());
-                 */
                 new Thread() {
                     public void run() {
                         ProfileTask task = new ProfileTask();
@@ -88,7 +76,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     };/* naver login handler finish*/
-    //mOAuthLoginModule.startOauthLoginActivity(mContext,mOAuthLoginHandler);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,8 +155,7 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject object = new JSONObject(result);
                 if (object.getString("resultcode").equals("00")) {
                     JSONObject jsonObject = new JSONObject(object.getString("response"));
-                    email = jsonObject.getString("email");
-                    Move_on_MapActivity(jsonObject.getString("name"), Type.NAVER);
+                    Move_on_MapActivity(jsonObject.getString("email"), Type.NAVER);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -186,8 +172,8 @@ public class LoginActivity extends AppCompatActivity {
         Google_Login = findViewById(R.id.Google_Login);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {//already google login
-            String name = account.getDisplayName();
-            Move_on_MapActivity(name, Type.GOOGLE);
+            String email = account.getEmail();
+            Move_on_MapActivity(email, Type.GOOGLE);
         }
         Google_Login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,27 +202,26 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            String name = account.getDisplayName();
-            email = account.getEmail();
-            Move_on_MapActivity(name, Type.GOOGLE);
+            String email = account.getEmail();
+            Move_on_MapActivity(email, Type.GOOGLE);
         } catch (ApiException e) {
         }
     }/*fin*/
     /*Google login functions*///////////////////////////////////////////////////////////////////////
 
     /*move on MainActivity -> MapActivity*/
-    private void Move_on_MapActivity(String name, Type t) {
+    private void Move_on_MapActivity(String email, Type t) {
         if(email != NULL)
-                checkId();
+                checkId(email);
         else LoginActivity.this.finish();
         Intent intent = new Intent(LoginActivity.this, MapActivity.class);
-        intent.putExtra("name", name);
+        intent.putExtra("email", email);
         intent.putExtra("type", t.toString());
         startActivity(intent);
     }
 
     /* check id's existence in server*/
-    public void checkId() {
+    public void checkId(String email) {
         db = FirebaseFirestore.getInstance();
         db.collection("Users").whereEqualTo("id", email).get()   // find id in server by global variable email
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -244,8 +229,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             if (task.getResult().isEmpty()) {                          // if task which executed Query is empty??
-                                Toast myToast = Toast.makeText(LoginActivity.this, "아이디 생성", Toast.LENGTH_SHORT);
-                                myToast.show();
                                 Map<String, Object> map2 = new HashMap<>();
                                 map2.put("gradenum", 0);
                                 map2.put("gradesum", 0);
@@ -267,8 +250,6 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 for (QueryDocumentSnapshot document : task.getResult()) {           //print text if there are data in server by email
                                     Log.d(TAG, document.getId() + " => " + document.getData());
-                                    Toast myToast = Toast.makeText(LoginActivity.this, "아이디 이미 있음", Toast.LENGTH_SHORT);
-                                    myToast.show();
                                 }
                             }
                         } else {
@@ -278,5 +259,4 @@ public class LoginActivity extends AppCompatActivity {
                 });
         LoginActivity.this.finish();
     }
-
 }
