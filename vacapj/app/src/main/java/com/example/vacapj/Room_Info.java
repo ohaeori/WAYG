@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.type.LatLng;
 
 import org.w3c.dom.Text;
 
@@ -277,6 +278,31 @@ public class Room_Info extends AppCompatActivity {
                     }
                 });
     }
+    public void getRoomNumber(LatLng point) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();     //위경도 값 받아서 문서 이름 찾는데 씀
+        String docName = Double.toString(point.getLatitude())+","+Double.toString(point.getLongitude());
+        db.collection("Location").document(docName)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                                Map<String,Object> map = map = document.getData();
+                                int roomNumber = (int)map.get("cnt");
+                                // 이 roomNumber 를 쓰면 됨. 대신 이 함수내에서밖에 못씀.
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.d(TAG, "get failed with ", task.getException());
+                        }
+                    }
+                });
+    }
+
 }
 
 
