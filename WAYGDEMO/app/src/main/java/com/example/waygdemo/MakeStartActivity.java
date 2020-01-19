@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import com.google.firebase.firestore.GeoPoint;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.android.gms.common.internal.safeparcel.SafeParcelable.NULL;
 
 public class MakeStartActivity extends AppCompatActivity {
 
@@ -48,7 +51,6 @@ public class MakeStartActivity extends AppCompatActivity {
 
         getMyIntent();
 
-        Ldb = FirebaseFirestore.getInstance();
         input_end = findViewById(R.id.ed_end);      //edittext 와 XML 을 연결
         input_time = findViewById(R.id.ed_time);
         input_pay = findViewById(R.id.ed_pay);
@@ -56,6 +58,7 @@ public class MakeStartActivity extends AppCompatActivity {
         input_name = findViewById(R.id.ed_name);
         makeRoom = findViewById(R.id.upload);
         getEnd = findViewById(R.id.findMap);
+
 
         getEnd.setOnClickListener(new Button.OnClickListener(){     //목적지 위치 지도에서 받기. 목적지의 위경도값 endPoint 에 저장
             @Override
@@ -73,8 +76,7 @@ public class MakeStartActivity extends AppCompatActivity {
                  *   Toast.makeText(this,"목적지 좌표 안찍었음",Toast.LENGTH_SHORT).show();
                  *   return;
                  * }
-                 * */
-
+                 */
                 String docName = Double.toString(startPoint.getLatitude());
                 docName = docName +","+Double.toString(startPoint.getLongitude());
                 time_String = input_time.getText().toString();      //edittext에 입력한 문자열을 전달
@@ -82,69 +84,103 @@ public class MakeStartActivity extends AppCompatActivity {
                 arrival = input_end.getText().toString();
                 departure = input_start.getText().toString();
                 roomname = input_name.getText().toString();
-                Map<String, Object> location = new HashMap<>();
-                location.put("title", departure);
-                location.put("coordinate",startPoint);
-                location.put("cnt",1);
-
-//                Map<String, Object> room = new HashMap<>();         // Map 의 형태로 DB에 저장
-//                room.put("destination",endPoint);
-//                room.put("time", time_String);
-//                room.put("dutch", pay_String);
-//                room.put("title", arrival);
-//                room.put("member", Arrays.asList(useremail));
-//                room.put("memnum",1);
-//                //최초 시작점 db에 생성함.
-//                Ldb.collection("Location").document(docName)
-//                        .set(location)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                Log.d(TAG, "DocumentSnapshot written with ID: ");
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.w(TAG, "Error adding document", e);
-//                            }
-//                        });
-//                // 이러면 DB 에서 순서가 안꼬일지 체크 해봐야함
-//                Rdb.collection("Location").document(docName).collection("Rooms").document(roomname)  //이경로에 저장함.
-//                        .set(room)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                Log.d(TAG, "DocumentSnapshot written with ID: ");
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.w(TAG, "Error adding document", e);
-//                            }
-//                        });
-
-                /*
-                    send intent
-                    room_name, user_name, departure, arrival
-                */
-                Intent intent = new Intent(MakeStartActivity.this, ChatActivity.class);
-                intent.putExtra("roomName", roomname);
-                intent.putExtra("userEmail", useremail);
-                intent.putExtra("departure", departure);
-                intent.putExtra("arrival", arrival);
-                intent.putExtra("is_create", "true");
-                finish();
-                startActivity(intent);
+                if (checkNullElements()) {
+                    setParentDoc(docName);
+                    setRoomDoc(docName);
+                    //makeChatAct();
+                }
+                else
+                    Toast.makeText(MakeStartActivity.this,"양식을 모두 채워주세요",Toast.LENGTH_SHORT).show();
             }
         });
     }
-    public void getMyIntent(){
+    public void getMyIntent(){                      // get intent of MapActivity
         Intent intent = getIntent();
         bundle = intent.getExtras();
         startPoint = new GeoPoint(bundle.getDouble("lat"),bundle.getDouble("lng"));
         useremail = bundle.getString("email");
+    }
+    public void setParentDoc(String docName)        // make doc at "Location" collection by starting point
+    {
+        Ldb = FirebaseFirestore.getInstance();
+        Map<String, Object> location = new HashMap<>();
+        location.put("title", departure);
+        location.put("coordinate",startPoint);
+        location.put("cnt",1);
+        Ldb.collection("Location").document(docName)
+                .set(location)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot written with ID: ");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
 
+    }
+    public void setRoomDoc(String docName)                  // make doc at "Room" subcollection
+    {
+        Rdb = FirebaseFirestore.getInstance();
+        Map<String, Object> room = new HashMap<>();
+        room.put("destination",endPoint);
+        room.put("time", time_String);
+        room.put("dutch", pay_String);
+        room.put("title", arrival);
+        room.put("member", Arrays.asList(useremail));
+        room.put("memnum",1);
+
+        Rdb.collection("Location").document(docName).collection("Room").document(roomname)  //save at this DB path
+                .set(room)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot written with ID: ");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
+    }
+    public boolean checkNullElements()
+    {
+        if(time_String.equals(""))
+            return false;
+        else if (pay_String.equals(""))
+            return false;
+        else if (arrival.equals(""))
+            return false;
+        else if (departure.equals(""))
+            return false;
+        /* 목적지 좌표 구현 후에 주석 제거 해야함.
+        else if (endPoint == null)
+            return false;
+         */
+        else if (roomname.equals(""))
+            return false;
+        return true;
+
+    }
+    public void makeChatAct()
+    {
+        /*
+                    send intent
+                    room_name, user_name, departure, arrival
+                */
+        Intent intent = new Intent(MakeStartActivity.this, ChatActivity.class);
+        intent.putExtra("roomName", roomname);
+        intent.putExtra("userEmail", useremail);
+        intent.putExtra("departure", departure);
+        intent.putExtra("arrival", arrival);
+        intent.putExtra("is_create", "true");
+        finish();
+        startActivity(intent);
     }
 }
