@@ -9,8 +9,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,7 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class RoomInfoActivity extends AppCompatActivity {
-    private EditText room_name, user_name, departure, arrival;
+    private TextView user_email;
     private Button create_room;
     private ListView chat_list;
 
@@ -35,34 +35,34 @@ public class RoomInfoActivity extends AppCompatActivity {
     private String select_room;
     private boolean check=true;
 
+    String coor;
+    String email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_info);
 
-        room_name = (EditText) findViewById(R.id.room_name);
-        user_name = (EditText) findViewById(R.id.user_name);
-        departure = (EditText) findViewById(R.id.departure);
-        arrival = (EditText) findViewById(R.id.arrival);
+        Intent intent = getIntent();
+        coor = intent.getStringExtra("coor");
+        email = intent.getStringExtra("email");
+
+        user_email = (TextView)findViewById(R.id.emailText);
         create_room = (Button) findViewById(R.id.create_room);
         chat_list = (ListView) findViewById(R.id.chat_list);
+
+        user_email.setText(email);
 
         /*Create Button event*/
         create_room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (user_name.getText().toString().equals("") || room_name.getText().toString().equals("")) {
-                    ToastMessage("USER,ROOM NAME을 입력해주세요"); return;
-                }else if (departure.getText().toString().equals("") || arrival.getText().toString().equals("")) {
-                    ToastMessage("출발지, 도착지를 입력해주세요"); return;
-                }
-
-                Move_on_ChatActivity(room_name.getText().toString(), user_name.getText().toString()
-                        ,"true");
-                room_name.setText("");
+                Intent intent = new Intent(RoomInfoActivity.this, MakeStartActivity.class);
+                intent.putExtra("email",email);
+                intent.putExtra("coor",coor);
+                startActivity(intent);
             }
         });
-
         showChatList();
     }
 
@@ -77,10 +77,6 @@ public class RoomInfoActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
                 if(!check) check = true;
-                if (user_name.getText().toString().equals("")) {
-                    ToastMessage("USER NAME을 입력해주세요");
-                    return;
-                }
                 /*check num of participants... not over 4*/
                 select_room = adapter.getItem(position);
                 databaseReference.child("chat").child(adapter.getItem(position)).addValueEventListener(mvalueEventListener);
@@ -134,7 +130,7 @@ public class RoomInfoActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         boolean is_newParticipant = true;
                         for(String participant : chatdbs.getParticipants()){
-                            if(participant.equals(user_name.getText().toString()))
+                            if(participant.equals(user_email.getText().toString()))
                                 is_newParticipant = false;
                         }
                         if(is_newParticipant){//if this user is new participant
@@ -143,14 +139,14 @@ public class RoomInfoActivity extends AppCompatActivity {
                                 return;
                             }
                             else {
-                                chatdbs.addParticipants(user_name.getText().toString());//add participant
+                                chatdbs.addParticipants(user_email.getText().toString());//add participant
                                 DatabaseReference keyRef = databaseReference.child("chat").
                                         child(select_room).child(key);
                                 keyRef.setValue(chatdbs);
                             }
                         }
                         check = false;
-                        Move_on_ChatActivity(select_room, user_name.getText().toString(), "false");
+                        Move_on_ChatActivity(select_room, user_email.getText().toString(), "false");
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -177,10 +173,6 @@ public class RoomInfoActivity extends AppCompatActivity {
     private void Move_on_ChatActivity(String roomname, String username, String is_create) {
         Intent intent = new Intent(RoomInfoActivity.this, ChatActivity.class);
         intent.putExtra("is_create", is_create);
-        if(is_create.equals("true")) {
-            intent.putExtra("departure", departure.getText().toString());
-            intent.putExtra("arrival", arrival.getText().toString());
-        }
         intent.putExtra("roomName", roomname);
         intent.putExtra("userName", username);
         startActivity(intent);

@@ -248,6 +248,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
             LatLng coordinate = infoWindow.getMarker().getPosition();
+            intent.putExtra("email",email);
             intent.putExtra("coor", coordinate);
             startActivity(intent);
             return true;
