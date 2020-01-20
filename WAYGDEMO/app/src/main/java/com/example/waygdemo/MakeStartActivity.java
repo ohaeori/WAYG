@@ -87,7 +87,7 @@ public class MakeStartActivity extends AppCompatActivity {
                 if (checkNullElements()) {
                     setParentDoc(docName);
                     setRoomDoc(docName);
-                    //makeChatAct();
+                    makeChatAct();
                 }
                 else
                     Toast.makeText(MakeStartActivity.this,"양식을 모두 채워주세요",Toast.LENGTH_SHORT).show();

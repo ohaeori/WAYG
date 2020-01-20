@@ -1,96 +1,188 @@
 package com.example.waygdemo;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class RoomInfoActivity extends AppCompatActivity {
+    private EditText room_name, user_name, departure, arrival;
+    private Button create_room;
+    private ListView chat_list;
 
-    private EditText input_time;        //XML의 각각 editext 지정
-    private EditText input_pay;
-    private EditText input_end;
-    private EditText input_id;
-    private EditText input_name;
-    Button genRoom;
-    Button getRoom;
-    String time_String = "";              //edittext 에서 받을 문자열들
-    String pay_String = "";
-    String end_String = "";
-    String id_String = "";
-    String name_String;
-    FirebaseFirestore db;
-    private static final String TAG = "DocSnippets";
-
-
-    DocumentReference docRef;
+    /*load database interface for use*/
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+    /*in database handler field*/
+    private String select_room;
+    private boolean check=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_info);
 
-        db = FirebaseFirestore.getInstance();
-        input_end = findViewById(R.id.ed_end);      //edittext 와 XML 을 연결
-        input_time = findViewById(R.id.ed_time);
-        input_pay = findViewById(R.id.ed_pay);
-        input_id = findViewById(R.id.ed_id);
-        input_name = findViewById(R.id.ed_name);
-        genRoom = findViewById(R.id.upload);
-        getRoom = findViewById(R.id.download);
+        room_name = (EditText) findViewById(R.id.room_name);
+        user_name = (EditText) findViewById(R.id.user_name);
+        departure = (EditText) findViewById(R.id.departure);
+        arrival = (EditText) findViewById(R.id.arrival);
+        create_room = (Button) findViewById(R.id.create_room);
+        chat_list = (ListView) findViewById(R.id.chat_list);
 
-        genRoom.setOnClickListener(new Button.OnClickListener() {   // 방 생성 클릭 이벤트
+        /*Create Button event*/
+        create_room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //테스트 할려고 일단 정적으로 선언함
-                String mail_String = "test@test.com";               //사용자 메일정보. 인텐트로 넘긴걸 쓰던가 api 호출하던가
-                GeoPoint geoPoint = new GeoPoint(35.7,128.7);   //핑 찍은 곳의 위경도값
-                String a = Double.toString(geoPoint.getLatitude());
-                a = a +","+Double.toString(geoPoint.getLongitude());
-                time_String = input_time.getText().toString();      //edittext에 입력한 문자열을 전달
-                pay_String = input_pay.getText().toString();
-                end_String = input_end.getText().toString();
-                id_String = input_id.getText().toString();
-                name_String = input_name.getText().toString();
+                if (user_name.getText().toString().equals("") || room_name.getText().toString().equals("")) {
+                    ToastMessage("USER,ROOM NAME을 입력해주세요"); return;
+                }else if (departure.getText().toString().equals("") || arrival.getText().toString().equals("")) {
+                    ToastMessage("출발지, 도착지를 입력해주세요"); return;
+                }
 
-                Map<String, Object> room = new HashMap<>();         // Map 의 형태로 DB에 저장
-                room.put("time", time_String);
-                room.put("dutch", pay_String);
-                room.put("title", end_String);
-                room.put("member", Arrays.asList(mail_String));
-                room.put("memnum",1);
+                Move_on_ChatActivity(room_name.getText().toString(), user_name.getText().toString()
+                        ,"true");
+                room_name.setText("");
+            }
+        });
 
-                db.collection("Location").document(a).collection("Rooms").document(name_String)  //이경로에 저장함
-                        .set(room)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot written with ID: ");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
-                            }
-                        });
-                //checkId();
+        showChatList();
+    }
+
+    private void showChatList() {
+        // 리스트 어댑터 생성 및 세팅 (arrayadater(어떤 액티비티에서, 어뎁터 뷰의 레이아웃. 여기서는 텍스트 뷰, 어뎁터 뷰가 보여줄 객체))
+        final ArrayAdapter<String> adapter
+                = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
+        chat_list.setAdapter(adapter);
+
+        /*ListView Click Event*/
+        chat_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                if(!check) check = true;
+                if (user_name.getText().toString().equals("")) {
+                    ToastMessage("USER NAME을 입력해주세요");
+                    return;
+                }
+                /*check num of participants... not over 4*/
+                select_room = adapter.getItem(position);
+                databaseReference.child("chat").child(adapter.getItem(position)).addValueEventListener(mvalueEventListener);
+            }
+        });
+
+        /*get data and add, del data etc... & add adapter, listener handling*/
+        databaseReference.child("chat").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.e("LOG", "dataSnapshot.getKey() : " + dataSnapshot.getKey());
+                adapter.add(dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+    }
+
+    /*realtime database listener*/
+    private ValueEventListener mvalueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            if(!check) return;
+            for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                ChatDBS chatdbs = snapshot.getValue(ChatDBS.class);
+                String key = snapshot.getKey();
+
+                /*Dialog display*/
+                AlertDialog.Builder builder = new AlertDialog.Builder(RoomInfoActivity.this);
+                builder.setTitle(select_room + "에 입장하시겠습니까?").setMessage(chatdbs.getParticipantsList()).setCancelable(false);
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        boolean is_newParticipant = true;
+                        for(String participant : chatdbs.getParticipants()){
+                            if(participant.equals(user_name.getText().toString()))
+                                is_newParticipant = false;
+                        }
+                        if(is_newParticipant){//if this user is new participant
+                            if(chatdbs.getNum_of_user()==4) {
+                                ToastMessage("정원초과입니다.");
+                                return;
+                            }
+                            else {
+                                chatdbs.addParticipants(user_name.getText().toString());//add participant
+                                DatabaseReference keyRef = databaseReference.child("chat").
+                                        child(select_room).child(key);
+                                keyRef.setValue(chatdbs);
+                            }
+                        }
+                        check = false;
+                        Move_on_ChatActivity(select_room, user_name.getText().toString(), "false");
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                break;
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
+    private void ToastMessage(String m) {
+        Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
+    }
+
+    private void Move_on_ChatActivity(String roomname, String username, String is_create) {
+        Intent intent = new Intent(RoomInfoActivity.this, ChatActivity.class);
+        intent.putExtra("is_create", is_create);
+        if(is_create.equals("true")) {
+            intent.putExtra("departure", departure.getText().toString());
+            intent.putExtra("arrival", arrival.getText().toString());
+        }
+        intent.putExtra("roomName", roomname);
+        intent.putExtra("userName", username);
+        startActivity(intent);
     }
 }
