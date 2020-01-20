@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".RoomInfoActivity">
 
-
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -30,13 +29,17 @@
             tools:layout_editor_absoluteX="252dp"
             tools:layout_editor_absoluteY="16dp" />
 
+        <View
+            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+
         <TextView
             android:id="@+id/emailText"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="right"
-            android:layout_weight="1"
-            android:gravity="right"
+            android:gravity="right|center_vertical"
             android:textSize="20dp"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="34dp"
@@ -49,6 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="2"
+        android:layout_marginTop="20dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

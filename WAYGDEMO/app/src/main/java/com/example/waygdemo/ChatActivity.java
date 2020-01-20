@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -75,7 +76,7 @@ public class ChatActivity extends AppCompatActivity {
         _Message _message = dataSnapshot.getValue(_Message.class);
         if(_message.getUserName().equals(USER_EMAIL)) adapter.setIsMe(true);
         else adapter.setIsMe(false);
-        adapter.addItem(_message.getUserName() , " : " + _message.getMessage());
+        adapter.addItem(_message.getUserName() , _message.getMessage());
         chat_view.setAdapter(adapter);
     }
 

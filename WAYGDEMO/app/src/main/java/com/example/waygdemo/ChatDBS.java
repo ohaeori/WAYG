@@ -45,7 +45,7 @@ public class ChatDBS {
     public String getParticipantsList(){
         String all_participants = new String();
         for(String participant : participants)
-            all_participants += participant + ", ";
-        return all_participants.substring(0, all_participants.length()-2);
+            all_participants += participant + "\n";
+        return all_participants.substring(0, all_participants.length()-1);
     }
 }

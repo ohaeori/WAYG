@@ -27,16 +27,15 @@ public class RoomInfoActivity extends AppCompatActivity {
     private TextView user_email;
     private Button create_room;
     private ListView chat_list;
+    private String coor;
+    private String email;
 
     /*load database interface for use*/
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     /*in database handler field*/
     private String select_room;
-    private boolean check=true;
-
-    String coor;
-    String email;
+    private boolean is_listen =true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +75,7 @@ public class RoomInfoActivity extends AppCompatActivity {
         chat_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
-                if(!check) check = true;
+                if(!is_listen) is_listen = true;
                 /*check num of participants... not over 4*/
                 select_room = adapter.getItem(position);
                 databaseReference.child("chat").child(adapter.getItem(position)).addValueEventListener(mvalueEventListener);
@@ -88,6 +87,7 @@ public class RoomInfoActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.e("LOG", "dataSnapshot.getKey() : " + dataSnapshot.getKey());
+                //DataSnapshot snapshot = dataSnapshot.child(dataSnapshot.getKey()).getChildren();
                 adapter.add(dataSnapshot.getKey());
             }
 
@@ -117,7 +117,7 @@ public class RoomInfoActivity extends AppCompatActivity {
     private ValueEventListener mvalueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            if(!check) return;
+            if(!is_listen) return;
             for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
                 ChatDBS chatdbs = snapshot.getValue(ChatDBS.class);
                 String key = snapshot.getKey();
@@ -145,7 +145,7 @@ public class RoomInfoActivity extends AppCompatActivity {
                                 keyRef.setValue(chatdbs);
                             }
                         }
-                        check = false;
+                        is_listen = false;
                         Move_on_ChatActivity(select_room, user_email.getText().toString(), "false");
                     }
                 });
@@ -170,11 +170,11 @@ public class RoomInfoActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
     }
 
-    private void Move_on_ChatActivity(String roomname, String username, String is_create) {
+    private void Move_on_ChatActivity(String roomname, String useremail, String is_create) {
         Intent intent = new Intent(RoomInfoActivity.this, ChatActivity.class);
         intent.putExtra("is_create", is_create);
         intent.putExtra("roomName", roomname);
-        intent.putExtra("userName", username);
+        intent.putExtra("userEmail", useremail);
         startActivity(intent);
     }
 }

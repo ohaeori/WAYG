@@ -1,11 +1,16 @@
 package com.example.waygdemo;
 
 import android.content.Context;
+import android.util.LayoutDirection;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.api.Distribution;
 
 import java.util.ArrayList;
 
@@ -47,21 +52,26 @@ public class ChatViewAdapter extends BaseAdapter {
         }
 
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
-        TextView textView1 = (TextView) convertView.findViewById(R.id.other_chat_View);
-        TextView textView2 = (TextView) convertView.findViewById(R.id.my_chat_View);
+        TextView other_id = (TextView) convertView.findViewById(R.id.other_id);
+        TextView otherChat_mess = (TextView) convertView.findViewById(R.id.other_chat_View);
+        TextView myChat_mess = (TextView) convertView.findViewById(R.id.my_chat_View);
         // Data Set(filteredItemList)에서 position에 위치한 데이터 참조 획득
         _Message messageViewItem = _messageList.get(position);
 
-        textView1.setText(messageViewItem.getLefttext());
-        textView2.setText(messageViewItem.getRighttext());
+        other_id.setText(messageViewItem.getNametext());
+        otherChat_mess.setText(messageViewItem.getLefttext());
+        myChat_mess.setText(messageViewItem.getRighttext());
 
         return convertView;
     }
 
     public void addItem(String username, String message) {
         _Message item = new _Message(username, message);
-        if(isMe)item.setRighttext();
-        else item.setLefttext();
+        if(isMe) item.setRighttext();
+        else {
+            item.setLefttext();
+            item.setNametext();
+        }
 
         _messageList.add(item);
     }

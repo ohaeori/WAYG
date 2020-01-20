@@ -5,8 +5,9 @@ public class _Message {
 
     private String userName;
     private String message;
-    private String lefttext;
-    private String righttext;
+    private String Lefttext;
+    private String Righttext;
+    private String nametext;
 
     public _Message() { }
     public _Message(String userName, String message) {
@@ -31,18 +32,26 @@ public class _Message {
     }
 
     public String getLefttext(){
-        return lefttext;
+        return Lefttext;
     }
 
-    public void setLefttext(){
-        lefttext = userName+" "+message;
+    public void setLefttext() {
+        this.Lefttext = message;
     }
 
     public String getRighttext(){
-        return righttext;
+        return Righttext;
     }
 
-    public void setRighttext(){
-        righttext = message;
+    public void setRighttext() {
+        this.Righttext = message;
+    }
+
+    public String getNametext(){
+        return nametext;
+    }
+
+    public void setNametext(){
+        this.nametext = userName;
     }
 }
