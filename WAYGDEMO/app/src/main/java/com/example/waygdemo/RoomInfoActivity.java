@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Iterator;
 
 public class RoomInfoActivity extends AppCompatActivity {
     private TextView user_email;
@@ -89,9 +90,10 @@ public class RoomInfoActivity extends AppCompatActivity {
         databaseReference.child("chat").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.e("LOG", "dataSnapshot.getKey() : " + dataSnapshot.getKey());
-                //DataSnapshot snapshot = dataSnapshot.child(dataSnapshot.getKey()).getChildren();
-                adapter.add(dataSnapshot.getKey());
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                ChatDBS chatDBS = child.next().getValue(ChatDBS.class);
+                if(chatDBS.getDeparture().equals("ㅇ"))
+                    adapter.add(dataSnapshot.getKey());
             }
 
             @Override
