@@ -164,13 +164,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         //make start location
+        makeStart(latLng);
+        /*
         Geocoder geocoder = new Geocoder(this);
         try {
             Toast.makeText(MapActivity.this,""+geocoder.getFromLocation(latLng.latitude,latLng.longitude,1),Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        makeStart(latLng);
+        }*/
 
     }
 
@@ -217,7 +218,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //set marker
     public void setMarkerList(NaverMap naverMap) {
-        //Toast.makeText(MapActivity.this,""+titleList.size(),Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < coor.size(); i++) {
             InfoWindow infoWindow = setInfoWindow(i);
@@ -259,8 +259,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         //set infoWindow OnClickListener
         Overlay.OnClickListener listener1 = overlay -> {
-            Toast.makeText(MapActivity.this,""+infoWindow.getMarker().getPosition(),Toast.LENGTH_SHORT).show();
-
             Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
             LatLng coordinate = infoWindow.getMarker().getPosition();
             intent.putExtra("email",email);
@@ -275,7 +273,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         return infoWindow;
     }
-
 
     //refresh marker info
     public void refresh(View v){

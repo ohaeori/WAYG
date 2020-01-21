@@ -9,7 +9,7 @@ public class ChatDBS {
     private String departure;
 
     public ChatDBS(){}
-    public ChatDBS(String username, String arrival, String departure){
+    public ChatDBS(String username, String departure, String arrival){
         participants = new ArrayList<>();
         participants.add(username);
         this.arrival = arrival;

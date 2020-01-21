@@ -36,6 +36,7 @@ public class RoomInfoActivity extends AppCompatActivity {
     /*in database handler field*/
     private String select_room;
     private boolean is_listen =true;
+    private String start;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class RoomInfoActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
 
         email = intent.getStringExtra("email");
+        start = intent.getStringExtra("title");
 
         user_email = (TextView)findViewById(R.id.emailText);
         create_room = (Button) findViewById(R.id.create_room);
@@ -61,7 +63,7 @@ public class RoomInfoActivity extends AppCompatActivity {
                 intent.putExtra("email",email);
                 intent.putExtra("lat",bundle.getDouble("lat"));
                 intent.putExtra("lng",bundle.getDouble("lng"));
-                intent.putExtra("title",bundle.getString("title"));
+                intent.putExtra("title",start);
                 intent.putExtra("cnt",bundle.getString("cnt"));
                 startActivity(intent);
             }
@@ -92,7 +94,7 @@ public class RoomInfoActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
                 ChatDBS chatDBS = child.next().getValue(ChatDBS.class);
-                if(chatDBS.getDeparture().equals("ㅇ"))
+                if(chatDBS.getDeparture().equals(start))
                     adapter.add(dataSnapshot.getKey());
             }
 

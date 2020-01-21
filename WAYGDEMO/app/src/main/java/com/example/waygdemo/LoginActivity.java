@@ -96,7 +96,6 @@ public class LoginActivity extends AppCompatActivity {
                 , "1bv72Ez8BL"
                 , "Client Name"
                 //,OAUTH_CALLBACK_INTENT
-
         );
         if (mOAuthLoginModule.getAccessToken(this) != null) {
             final String accessToken = mOAuthLoginModule.getAccessToken(mContext);
