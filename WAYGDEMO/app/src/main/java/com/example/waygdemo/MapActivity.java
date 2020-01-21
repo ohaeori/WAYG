@@ -56,6 +56,11 @@ import static com.example.waygdemo.LoginActivity.mOAuthLoginModule;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NaverMap.OnMapClickListener, OnCompleteListener<QuerySnapshot> {
 
+    private final long FINISH_INTERVAL_TIME = 200000;
+    private long backPressedTime = 0;
+
+
+
     //for firestore
     FirebaseFirestore db=FirebaseFirestore.getInstance();
     private static final String TAG = "DocSnippets";
@@ -193,6 +198,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     intent.putExtra("lng",latLng.longitude);
                                     intent.putExtra("email",email);
                                     marker.setMap(null);
+                                    finish();
                                     startActivity(intent);
                                 }
                             }).setNegativeButton("아니오",
@@ -218,6 +224,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //set marker
     public void setMarkerList(NaverMap naverMap) {
+        //Toast.makeText(MapActivity.this,""+titleList.size(),Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < coor.size(); i++) {
             InfoWindow infoWindow = setInfoWindow(i);
@@ -259,6 +266,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         //set infoWindow OnClickListener
         Overlay.OnClickListener listener1 = overlay -> {
+            Toast.makeText(MapActivity.this,""+infoWindow.getMarker().getPosition(),Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
             LatLng coordinate = infoWindow.getMarker().getPosition();
             intent.putExtra("email",email);
@@ -274,32 +283,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return infoWindow;
     }
 
+
     //refresh marker info
     public void refresh(View v){
+        db.clearPersistence();
         db.collection("Location").get().addOnCompleteListener(this);
-    }
-
-    //upload marker's info
-    public void setGeopoint(String title, GeoPoint coordinate){
-        Map<String,Object> mapS = new HashMap<>();		// initialize hash-map
-        mapS.put("coordinate",coordinate);
-        mapS.put("title",title);
-        mapS.put("cnt",1);
-
-        db.collection("Location")
-                .add(mapS)								//upload at server mapS's data by auto ID
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
     }
 
     /*logout Button event ~ */
@@ -348,5 +336,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         super.onRequestPermissionsResult(
                 requestCode, permissions, grantResults);
+    }
+
+    //back Press
+    @Override
+    public void onBackPressed() {
+        backPressDialog();
+    }
+
+    //back press finish
+    private void backPressDialog() {
+        AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+        alt_bld.setMessage("종료 하시겠습니까?").setCancelable(false)
+                .setPositiveButton("네",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                               MapActivity.super.onBackPressed();
+                            }
+                        }).setNegativeButton("아니오",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alt_bld.create();
+        // 대화창 제목 설정
+        alert.setTitle("종료");
+        // 대화창 배경 색 설정
+        alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
+        alert.show();
     }
 }
