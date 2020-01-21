@@ -65,6 +65,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<LatLng> coor = new ArrayList<LatLng>(); //coordinate of departure
     ArrayList<Marker> markerList = new ArrayList<Marker>(); //list of mark
     ArrayList<String> titleList = new ArrayList<String>(); //list of title
+    ArrayList<String> cntList = new ArrayList<>();          //list of count
     NaverMap Map;
     int addMode = -1;
     String roomNumber;
@@ -139,12 +140,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (task.isSuccessful()) {
             coor.clear();
             titleList.clear();
+            cntList.clear();
             for (QueryDocumentSnapshot document : task.getResult()) {
                 Log.d(TAG, document.getId() + " => " + document.getData());
                 java.util.Map<String, Object> mapG = document.getData();
                 GeoPoint cur = (GeoPoint) mapG.get("coordinate");
                 String title =mapG.get("title").toString();
-
+                cntList.add(mapG.get("cnt").toString());
                 coor.add(new LatLng(cur.getLatitude(),cur.getLongitude()));
                 titleList.add(title);
             }
@@ -247,13 +249,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         InfoWindow infoWindow = new InfoWindow();
 
         //set location's chat roon count
-        GeoPoint aa= new GeoPoint(coor.get(i).latitude,coor.get(i).longitude);
-        getRoomNumber(aa);
         infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(this) {
             @NonNull
             @Override
             public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                return "현재 채팅방 수 "+roomNumber;
+                return "현재 채팅방 수 "+cntList.get(i);
             }
         });
 
@@ -267,7 +267,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             intent.putExtra("title",titleList.get(i));
             intent.putExtra("lat", coordinate.latitude);
             intent.putExtra("lng",coordinate.longitude);
-            intent.putExtra("cnt",roomNumber);
+            intent.putExtra("cnt",cntList.get(i));
             startActivity(intent);
             return true;
         };
@@ -276,32 +276,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return infoWindow;
     }
 
-    public void getRoomNumber(GeoPoint point) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();     //위경도 값 받아서 문서 이름 찾는데 씀
-        String docName = Double.toString(point.getLatitude())+","+Double.toString(point.getLongitude());
-        db.collection("Location").document(docName)
-                .get()
-                .addOnCompleteListener(getNum);
-    }
-
-    private  OnCompleteListener getNum = new OnCompleteListener<DocumentSnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    Map<String,Object> map = map = document.getData();
-                    roomNumber = map.get("cnt").toString();
-                    // 이 roomNumber 를 쓰면 됨. 대신 이 함수내에서밖에 못씀.
-                } else {
-                    Log.d(TAG, "No such document");
-                }
-            } else {
-                Log.d(TAG, "get failed with ", task.getException());
-            }
-        }
-    };
 
     //refresh marker info
     public void refresh(View v){

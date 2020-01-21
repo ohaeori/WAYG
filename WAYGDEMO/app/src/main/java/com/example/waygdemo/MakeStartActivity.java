@@ -43,7 +43,7 @@ public class MakeStartActivity extends AppCompatActivity {
     GeoPoint startPoint;
     GeoPoint endPoint;
     Bundle bundle;
-    int cnt = 0;
+    int cnt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +106,7 @@ public class MakeStartActivity extends AppCompatActivity {
             cnt = Integer.parseInt(bundle.getString("cnt"));
             System.out.println(cnt);
         }
+        else cnt =0;
     }
     public void setParentDoc(String docName)        // make doc at "Location" collection by starting point
     {
@@ -113,7 +114,8 @@ public class MakeStartActivity extends AppCompatActivity {
         Map<String, Object> location = new HashMap<>();
         location.put("title", departure);
         location.put("coordinate",startPoint);
-        location.put("cnt",cnt+1);
+        location.put("cnt",++cnt);
+        System.out.println(cnt);
         Ldb.collection("Location").document(docName)
                 .set(location)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -166,10 +168,10 @@ public class MakeStartActivity extends AppCompatActivity {
             return false;
         else if (departure.equals(""))
             return false;
-        /* 목적지 좌표 구현 후에 주석 제거 해야함.
-        else if (endPoint == null)
+        else if (endPoint == null) {
+            Toast.makeText(this,"목적지를 지도에서 찾아주세요.",Toast.LENGTH_SHORT).show();
             return false;
-         */
+        }
         else if (roomname.equals(""))
             return false;
         return true;
