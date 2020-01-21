@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".GetDestination"></activity>
         <!-- [naveroauthlogin][start] for naver ID login -->
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
@@ -21,9 +21,7 @@
             tools:replace="android:theme" />
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginInAppBrowserActivity"
-            android:label="OAuth2.0 In-app" />
-
-        <!-- [naverMap][start] for naver Map API -->
+            android:label="OAuth2.0 In-app" /> <!-- [naverMap][start] for naver Map API -->
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="c1raxwccgr" />
@@ -35,10 +33,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapActivity" ></activity>
-        <activity android:name=".MakeStartActivity"></activity>
-        <activity android:name=".RoomInfoActivity" ></activity>
-        <activity android:name=".ChatActivity" ></activity>
+        <activity android:name=".MapActivity" />
+        <activity android:name=".MakeStartActivity" />
+        <activity android:name=".RoomInfoActivity" />
+        <activity android:name=".ChatActivity" />
     </application>
 
 </manifest>

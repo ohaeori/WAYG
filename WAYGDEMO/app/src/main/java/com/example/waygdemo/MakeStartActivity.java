@@ -43,6 +43,7 @@ public class MakeStartActivity extends AppCompatActivity {
     GeoPoint startPoint;
     GeoPoint endPoint;
     Bundle bundle;
+    int cnt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +59,13 @@ public class MakeStartActivity extends AppCompatActivity {
         input_name = findViewById(R.id.ed_name);
         makeRoom = findViewById(R.id.upload);
         getEnd = findViewById(R.id.findMap);
-
+        input_start.setText(departure);
 
         getEnd.setOnClickListener(new Button.OnClickListener(){     //목적지 위치 지도에서 받기. 목적지의 위경도값 endPoint 에 저장
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MakeStartActivity.this, GetDestination.class);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -99,6 +101,11 @@ public class MakeStartActivity extends AppCompatActivity {
         bundle = intent.getExtras();
         startPoint = new GeoPoint(bundle.getDouble("lat"),bundle.getDouble("lng"));
         useremail = bundle.getString("email");
+        departure = bundle.getString("title");
+        if(bundle.getString("cnt")!=null) {
+            cnt = Integer.parseInt(bundle.getString("cnt"));
+            System.out.println(cnt);
+        }
     }
     public void setParentDoc(String docName)        // make doc at "Location" collection by starting point
     {
@@ -106,7 +113,7 @@ public class MakeStartActivity extends AppCompatActivity {
         Map<String, Object> location = new HashMap<>();
         location.put("title", departure);
         location.put("coordinate",startPoint);
-        location.put("cnt",1);
+        location.put("cnt",cnt+1);
         Ldb.collection("Location").document(docName)
                 .set(location)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -182,5 +189,13 @@ public class MakeStartActivity extends AppCompatActivity {
         intent.putExtra("is_create", "true");
         finish();
         startActivity(intent);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==1)
+        {
+            Bundle bundle = data.getExtras();
+            endPoint = new GeoPoint(bundle.getDouble("lat"),bundle.getDouble("lng"));
+        }
     }
 }

@@ -238,7 +238,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @NonNull
             @Override
             public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                return "현제 채팅방 수 "+roomNumber;
+                return "현재 채팅방 수 "+roomNumber;
             }
         });
 
@@ -249,7 +249,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
             LatLng coordinate = infoWindow.getMarker().getPosition();
             intent.putExtra("email",email);
-            intent.putExtra("coor", coordinate);
+            intent.putExtra("title",titleList.get(i));
+            intent.putExtra("lat", coordinate.latitude);
+            intent.putExtra("lng",coordinate.longitude);
+            intent.putExtra("cnt",roomNumber);
             startActivity(intent);
             return true;
         };

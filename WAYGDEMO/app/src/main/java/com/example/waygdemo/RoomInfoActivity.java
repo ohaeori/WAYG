@@ -27,7 +27,6 @@ public class RoomInfoActivity extends AppCompatActivity {
     private TextView user_email;
     private Button create_room;
     private ListView chat_list;
-    private String coor;
     private String email;
 
     /*load database interface for use*/
@@ -43,7 +42,8 @@ public class RoomInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_room_info);
 
         Intent intent = getIntent();
-        coor = intent.getStringExtra("coor");
+        Bundle bundle = intent.getExtras();
+
         email = intent.getStringExtra("email");
 
         user_email = (TextView)findViewById(R.id.emailText);
@@ -58,7 +58,10 @@ public class RoomInfoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(RoomInfoActivity.this, MakeStartActivity.class);
                 intent.putExtra("email",email);
-                intent.putExtra("coor",coor);
+                intent.putExtra("lat",bundle.getDouble("lat"));
+                intent.putExtra("lng",bundle.getDouble("lng"));
+                intent.putExtra("title",bundle.getString("title"));
+                intent.putExtra("cnt",bundle.getString("cnt"));
                 startActivity(intent);
             }
         });
