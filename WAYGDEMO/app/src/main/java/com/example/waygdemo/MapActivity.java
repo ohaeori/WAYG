@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -43,9 +44,11 @@ import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.MarkerIcons;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import static com.example.waygdemo.LoginActivity.mContext;
 import static com.example.waygdemo.LoginActivity.mGoogleSignInClient;
@@ -91,7 +94,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         bundle = intent.getExtras();
         email = bundle.getString("email");// 다음 화면으로 넘겨야함
-        TextView_name.setText(email);
+        StringTokenizer token = new StringTokenizer(email,"@");
+        TextView_name.setText(token.nextToken());
     }
 
     //make option(start knu,zoom 14)
@@ -158,6 +162,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         //make start location
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            Toast.makeText(MapActivity.this,""+geocoder.getFromLocation(latLng.latitude,latLng.longitude,1),Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        makeStart(latLng);
+
+    }
+
+    //make new start location
+    public void makeStart(LatLng latLng){
         if (addMode > 0) {
             Marker marker = new Marker();
             marker.setPosition(latLng);
@@ -173,7 +189,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     intent.putExtra("lat",latLng.latitude);
                                     intent.putExtra("lng",latLng.longitude);
                                     intent.putExtra("email",email);
-                                    System.out.println(email);
+                                    marker.setMap(null);
                                     startActivity(intent);
                                 }
                             }).setNegativeButton("아니오",
@@ -192,7 +208,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-
+    //chang mode to add marker
     public void markerAdd(View v) {
         addMode *= -1;
     }
@@ -219,7 +235,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             marker.setSubCaptionColor(Color.RED);
             marker.setSubCaptionHaloColor(Color.YELLOW);
             marker.setSubCaptionTextSize(10);
-
 
             //add to List
             markerList.add(marker);
