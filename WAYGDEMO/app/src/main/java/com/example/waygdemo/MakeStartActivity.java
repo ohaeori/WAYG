@@ -50,8 +50,6 @@ public class MakeStartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_start);
 
-        getMyIntent();
-
         input_end = findViewById(R.id.ed_end);      //edittext 와 XML 을 연결
         input_time = findViewById(R.id.ed_time);
         input_pay = findViewById(R.id.ed_pay);
@@ -59,7 +57,8 @@ public class MakeStartActivity extends AppCompatActivity {
         input_name = findViewById(R.id.ed_name);
         makeRoom = findViewById(R.id.upload);
         getEnd = findViewById(R.id.findMap);
-        input_start.setText(departure);
+
+        getMyIntent();
 
         getEnd.setOnClickListener(new Button.OnClickListener(){     //목적지 위치 지도에서 받기. 목적지의 위경도값 endPoint 에 저장
             @Override
@@ -69,16 +68,10 @@ public class MakeStartActivity extends AppCompatActivity {
             }
         });
 
-        // 사용자가 빈칸을 놔두었을때도 핸들링 해야... 완성하면 주석 삭제
         makeRoom.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*목적지좌표를 지도에서 안찍고 왔을 때 핸들링 해줘야함.
-                 * if(endPoint == NULL){
-                 *   Toast.makeText(this,"목적지 좌표 안찍었음",Toast.LENGTH_SHORT).show();
-                 *   return;
-                 * }
-                 */
+
                 String docName = Double.toString(startPoint.getLatitude());
                 docName = docName +","+Double.toString(startPoint.getLongitude());
                 time_String = input_time.getText().toString();      //edittext에 입력한 문자열을 전달
@@ -102,6 +95,10 @@ public class MakeStartActivity extends AppCompatActivity {
         startPoint = new GeoPoint(bundle.getDouble("lat"),bundle.getDouble("lng"));
         useremail = bundle.getString("email");
         departure = bundle.getString("title");
+        if(departure!=null) {
+            input_start.setText(departure);
+            input_start.setEnabled(false);
+        }
         if(bundle.getString("cnt")!=null) {
             cnt = Integer.parseInt(bundle.getString("cnt"));
             System.out.println(cnt);
@@ -190,6 +187,8 @@ public class MakeStartActivity extends AppCompatActivity {
         intent.putExtra("arrival", arrival);
         intent.putExtra("is_create", "true");
         finish();
+        RoomInfoActivity RA = (RoomInfoActivity)RoomInfoActivity._RoomInfoAct;
+        RA.finish();
         startActivity(intent);
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent data){

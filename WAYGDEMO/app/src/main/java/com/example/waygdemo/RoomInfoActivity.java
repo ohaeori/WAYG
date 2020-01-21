@@ -1,5 +1,6 @@
 package com.example.waygdemo;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,12 +38,13 @@ public class RoomInfoActivity extends AppCompatActivity {
     private String select_room;
     private boolean is_listen =true;
     private String start;
+    public static Activity _RoomInfoAct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_info);
-
+        _RoomInfoAct = RoomInfoActivity.this;
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
