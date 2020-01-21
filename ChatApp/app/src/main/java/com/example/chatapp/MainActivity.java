@@ -23,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Iterator;
+
 public class MainActivity extends AppCompatActivity {
     private EditText room_name, user_name, departure, arrival;
     private Button create_room;
@@ -91,8 +93,11 @@ public class MainActivity extends AppCompatActivity {
         databaseReference.child("chat").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.e("LOG", "dataSnapshot.getKey() : " + dataSnapshot.getKey());
-                adapter.add(dataSnapshot.getKey());
+                Log.d("mytag", "dataSnapshot.getKey() : " + dataSnapshot.getKey());
+                Iterator<DataSnapshot> child = dataSnapshot.getChildren().iterator();
+                ChatDBS chatDBS = child.next().getValue(ChatDBS.class);
+                if(chatDBS.getDeparture().equals("ㅈㅈ"))
+                    adapter.add(dataSnapshot.getKey());
             }
 
             @Override
