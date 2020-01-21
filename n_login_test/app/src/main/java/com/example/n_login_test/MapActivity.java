@@ -43,10 +43,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        String name = bundle.getString("name");
+        String nickname = bundle.getString("nickname");
         final String type = bundle.getString("type");
 
-        TextView_name.setText(name);
+        TextView_name.setText(nickname);
 
         /*logout Button event ~ */
         logout_Button.setClickable(true);

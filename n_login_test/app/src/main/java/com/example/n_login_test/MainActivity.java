@@ -1,5 +1,6 @@
 package com.example.n_login_test;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -17,7 +18,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.OAuthLoginHandler;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
@@ -32,10 +32,12 @@ import java.net.URL;
 enum Type{ NAVER, GOOGLE }
 
 public class MainActivity extends AppCompatActivity {
+    public static Activity AActivity;
     /*naver login field*/
     public static OAuthLogin mOAuthLoginModule;
     public static Context mContext;
     OAuthLoginButton authLoginButton;
+    private boolean logined = false;
     /*Google login field*/
     SignInButton Google_Login;
     private static final int RC_SIGN_IN = 100;
@@ -82,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AActivity = MainActivity.this;
+
         /*naver login event*////////////////////////////////////////////////////////////////////////
         authLoginButton = findViewById(R.id.buttonOAuthLoginImg);
         mOAuthLoginModule = OAuthLogin.getInstance();
@@ -94,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 // SDK 4.1.4 버전부터는 OAUTH_CALLBACK_INTENT변수를 사용하지 않습니다.
         );
         if (mOAuthLoginModule.getAccessToken(this) != null) {
+            logined = true;
             final String accessToken = mOAuthLoginModule.getAccessToken(mContext);
             new Thread() {
                 public void run() {
@@ -113,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
         Google_Login = findViewById(R.id.Google_Login);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {//already google login
-            String name = account.getDisplayName();
-            Move_on_MapActivity(name, Type.GOOGLE);
+            String email = account.getEmail();
+            Move_on_Activity(MapActivity.class, email, Type.GOOGLE);
         }
         Google_Login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,18 +148,23 @@ public class MainActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            String name = account.getDisplayName();
-            Move_on_MapActivity(name, Type.GOOGLE);
+            String email = account.getEmail();
+            Move_on_Activity(NickNameActivity.class, email, Type.GOOGLE);
         } catch (ApiException e) {
         }
     }/*fin*/
     /*Google login functions*///////////////////////////////////////////////////////////////////////
 
     /*move on MainActivity -> MapActivity*/
-    private void Move_on_MapActivity(String name, Type t) {
-        MainActivity.this.finish();
-        Intent intent = new Intent(MainActivity.this, MapActivity.class);
-        intent.putExtra("name", name);
+    private void Move_on_Activity(Class Activity, String email, Type t) {
+        Intent intent = new Intent(MainActivity.this, Activity);
+        if(Activity.equals(NickNameActivity.class)) intent.putExtra("email", email);
+        else {
+            MainActivity.this.finish();
+            /*load user nickname from the database*/
+            String nickname = "nickname";
+            intent.putExtra("nickname", nickname);
+        }
         intent.putExtra("type", t.toString());
         startActivity(intent);
     }
@@ -202,7 +212,8 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject object = new JSONObject(result);
                 if (object.getString("resultcode").equals("00")) {
                     JSONObject jsonObject = new JSONObject(object.getString("response"));
-                    Move_on_MapActivity(jsonObject.getString("name"), Type.NAVER);
+                    if(logined) Move_on_Activity(MapActivity.class, jsonObject.getString("email"), Type.NAVER);
+                    else Move_on_Activity(NickNameActivity.class, jsonObject.getString("email"), Type.NAVER);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

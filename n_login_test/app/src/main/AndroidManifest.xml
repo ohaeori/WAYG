@@ -39,6 +39,9 @@
         <activity android:name=".MapActivity">
 
         </activity>
+        <activity android:name=".NickNameActivity">
+
+        </activity>
     </application>
 
 </manifest>
