@@ -228,8 +228,10 @@ public class LoginActivity extends AppCompatActivity {
             getNickName(email,t);
 
         }
-        intent.putExtra("type", t.toString());
-        startActivity(intent);
+        else {
+            intent.putExtra("type", t.toString());
+            startActivity(intent);
+        }
     }
 
     /* check id's existence in server*/
