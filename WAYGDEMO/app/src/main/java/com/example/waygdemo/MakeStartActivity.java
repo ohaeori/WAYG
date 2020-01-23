@@ -188,7 +188,8 @@ public class MakeStartActivity extends AppCompatActivity {
         intent.putExtra("is_create", "true");
         finish();
         RoomInfoActivity RA = (RoomInfoActivity)RoomInfoActivity._RoomInfoAct;
-        RA.finish();
+        if(RA!=null)
+            RA.finish();
         startActivity(intent);
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
