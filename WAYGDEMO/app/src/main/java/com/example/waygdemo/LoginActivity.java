@@ -23,6 +23,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -58,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     /*Firestore access field*/
     FirebaseFirestore db;
     private static final String TAG = "DocSnippets";
+    String nick;
     /* naver login handler */
     private OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {
         @Override
@@ -222,8 +225,9 @@ public class LoginActivity extends AppCompatActivity {
         if(Activity.equals(MapActivity.class)) {
             LoginActivity.this.finish();
             /*load user nickname from the database*/
-            String nickname = "nickname";
-            intent.putExtra("nickname", nickname);
+            getNickName(email);
+            System.out.println(nick);
+            intent.putExtra("nickname",nick);
         }
         intent.putExtra("type", t.toString());
         startActivity(intent);
@@ -238,24 +242,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             if (task.getResult().isEmpty()) {                          // if task which executed Query is empty??
-                                Map<String, Object> map2 = new HashMap<>();
-                                map2.put("gradenum", 0);
-                                map2.put("gradesum", 0);
-                                map2.put("id", email);
-                                db.collection("Users").document(email)  // store id and initialize data because it was first login
-                                        .set(map2)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d(TAG, "DocumentSnapshot written with ID: ");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w(TAG, "Error adding document", e);
-                                            }
-                                        });
+
+
                             } else {
                                 for (QueryDocumentSnapshot document : task.getResult()) {           //print text if there are data in server by email
                                     Log.d(TAG, document.getId() + " => " + document.getData());
@@ -268,4 +256,28 @@ public class LoginActivity extends AppCompatActivity {
                 });
         LoginActivity.this.finish();
     }
+    public void getNickName(String email)
+    {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("Users").document(email);
+        docRef.get().addOnCompleteListener(nickListen);
+    }
+    OnCompleteListener nickListen = new OnCompleteListener<DocumentSnapshot>() {
+        @Override
+        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    Map<String,Object> map = document.getData();
+                    nick = map.get("nickName").toString();
+                } else {
+                    Log.d(TAG, "No such document");
+                }
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+            }
+        }
+    };
+
 }

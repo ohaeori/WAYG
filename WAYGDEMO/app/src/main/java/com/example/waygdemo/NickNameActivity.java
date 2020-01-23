@@ -19,6 +19,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.example.waygdemo.LoginActivity.mContext;
 import static com.example.waygdemo.LoginActivity.mGoogleSignInClient;
 import static com.example.waygdemo.LoginActivity.mOAuthLoginModule;
@@ -80,7 +83,7 @@ public class NickNameActivity extends Activity {
         public void onClick(View v) {
             if(create_button.getText().toString().equals("생성")){
                 /*save in database*/
-                setNickName();
+                setUserInfo();
                 /*move on next intent*/
                 loginActivity.finish();
                 NickNameActivity.this.finish();
@@ -116,22 +119,28 @@ public class NickNameActivity extends Activity {
         if (type.equals("NAVER")) mOAuthLoginModule.logout(mContext);
         else if (type.equals("GOOGLE")) mGoogleSignInClient.signOut();
     }
-    public void setNickName()
+    public void setUserInfo()
     {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("Users").document(email);
         String nick = nickname.getText().toString();
-        docRef.update("nickName",nick)
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("gradenum", 0);
+        map2.put("gradesum", 0);
+        map2.put("id", email);
+        map2.put("nickName",nick);
+        db.collection("Users").document(email)  // store id and initialize data because it was first login
+                .set(map2)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        Log.d(TAG, "DocumentSnapshot written with ID: ");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
+                        Log.w(TAG, "Error adding document", e);
                     }
                 });
     }
