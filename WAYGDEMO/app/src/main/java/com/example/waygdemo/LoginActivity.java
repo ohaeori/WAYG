@@ -225,9 +225,8 @@ public class LoginActivity extends AppCompatActivity {
         if(Activity.equals(MapActivity.class)) {
             LoginActivity.this.finish();
             /*load user nickname from the database*/
-            getNickName(email);
-            System.out.println(nick);
-            intent.putExtra("nickname",nick);
+            getNickName(email,t);
+
         }
         intent.putExtra("type", t.toString());
         startActivity(intent);
@@ -256,28 +255,33 @@ public class LoginActivity extends AppCompatActivity {
                 });
         LoginActivity.this.finish();
     }
-    public void getNickName(String email)
+    public void getNickName(String email,Type t)
     {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("Users").document(email);
-        docRef.get().addOnCompleteListener(nickListen);
-    }
-    OnCompleteListener nickListen = new OnCompleteListener<DocumentSnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    Map<String,Object> map = document.getData();
-                    nick = map.get("nickName").toString();
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String, Object> map = document.getData();
+                        nick = map.get("nickName").toString();
+                        Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+                        intent.putExtra("nickname",nick);
+                        intent.putExtra("email", email);
+                        intent.putExtra("type", t.toString());
+                        startActivity(intent);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
                 } else {
-                    Log.d(TAG, "No such document");
+                    Log.d(TAG, "get failed with ", task.getException());
                 }
-            } else {
-                Log.d(TAG, "get failed with ", task.getException());
+
             }
-        }
-    };
+        });
+    }
 
 }
