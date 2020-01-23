@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (object.getString("resultcode").equals("00")) {
                     JSONObject jsonObject = new JSONObject(object.getString("response"));
                     if(logined) Move_on_Activity(MapActivity.class, jsonObject.getString("email"), Type.NAVER);
-                    else Move_on_Activity(NickNameActivity.class, jsonObject.getString("email"), Type.NAVER);
+                    else checkId(jsonObject.getString("email"), Type.NAVER);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -211,8 +211,8 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String email = account.getEmail();
+            checkId(email,Type.GOOGLE);
 
-            Move_on_Activity(NickNameActivity.class, email, Type.GOOGLE);
         } catch (ApiException e) {
         }
     }/*fin*/
@@ -235,7 +235,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /* check id's existence in server*/
-    public void checkId(String email) {
+    public void checkId(String email, Type t) {
         db = FirebaseFirestore.getInstance();
         db.collection("Users").whereEqualTo("id", email).get()   // find id in server by global variable email
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -243,19 +243,19 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             if (task.getResult().isEmpty()) {                          // if task which executed Query is empty??
-
+                                Move_on_Activity(NickNameActivity.class, email, t);
 
                             } else {
                                 for (QueryDocumentSnapshot document : task.getResult()) {           //print text if there are data in server by email
                                     Log.d(TAG, document.getId() + " => " + document.getData());
                                 }
+                                Move_on_Activity(MapActivity.class,email,t);
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
-        LoginActivity.this.finish();
     }
     public void getNickName(String email,Type t)
     {
