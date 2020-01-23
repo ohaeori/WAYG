@@ -5,12 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import static com.example.waygdemo.LoginActivity.mContext;
 import static com.example.waygdemo.LoginActivity.mGoogleSignInClient;
@@ -24,6 +31,7 @@ public class NickNameActivity extends Activity {
     LoginActivity loginActivity;
     String email;
     String type;
+    private static final String TAG = "DocSnippets";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +80,7 @@ public class NickNameActivity extends Activity {
         public void onClick(View v) {
             if(create_button.getText().toString().equals("생성")){
                 /*save in database*/
-
+                setNickName();
                 /*move on next intent*/
                 loginActivity.finish();
                 NickNameActivity.this.finish();
@@ -107,5 +115,24 @@ public class NickNameActivity extends Activity {
         super.onBackPressed();
         if (type.equals("NAVER")) mOAuthLoginModule.logout(mContext);
         else if (type.equals("GOOGLE")) mGoogleSignInClient.signOut();
+    }
+    public void setNickName()
+    {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("Users").document(email);
+        String nick = nickname.getText().toString();
+        docRef.update("nickName",nick)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
     }
 }

@@ -208,6 +208,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String email = account.getEmail();
+
             Move_on_Activity(NickNameActivity.class, email, Type.GOOGLE);
         } catch (ApiException e) {
         }
