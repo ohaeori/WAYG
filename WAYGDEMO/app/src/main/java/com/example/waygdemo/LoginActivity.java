@@ -1,5 +1,6 @@
 package com.example.waygdemo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -44,6 +45,8 @@ enum Type{ NAVER, GOOGLE }
 
 public class LoginActivity extends AppCompatActivity {
 
+    private boolean logined = false;
+    public static Activity loginActivity;
     private static final int RC_SIGN_IN = 100;
     /*naver login field*/
     public static OAuthLogin mOAuthLoginModule;
@@ -81,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loginActivity = LoginActivity.this;
 
         naverLogin();
         googleLogin();
@@ -98,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                 //,OAUTH_CALLBACK_INTENT
         );
         if (mOAuthLoginModule.getAccessToken(this) != null) {
+            logined = true;
             final String accessToken = mOAuthLoginModule.getAccessToken(mContext);
             new Thread() {
                 public void run() {
@@ -154,7 +159,8 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject object = new JSONObject(result);
                 if (object.getString("resultcode").equals("00")) {
                     JSONObject jsonObject = new JSONObject(object.getString("response"));
-                    Move_on_MapActivity(jsonObject.getString("email"), Type.NAVER);
+                    if(logined) Move_on_Activity(MapActivity.class, jsonObject.getString("email"), Type.NAVER);
+                    else Move_on_Activity(NickNameActivity.class, jsonObject.getString("email"), Type.NAVER);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -172,7 +178,7 @@ public class LoginActivity extends AppCompatActivity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {//already google login
             String email = account.getEmail();
-            Move_on_MapActivity(email, Type.GOOGLE);
+            Move_on_Activity(MapActivity.class, email, Type.GOOGLE);
         }
         Google_Login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,19 +208,22 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String email = account.getEmail();
-            Move_on_MapActivity(email, Type.GOOGLE);
+            Move_on_Activity(NickNameActivity.class, email, Type.GOOGLE);
         } catch (ApiException e) {
         }
     }/*fin*/
     /*Google login functions*///////////////////////////////////////////////////////////////////////
 
-    /*move on MainActivity -> MapActivity*/
-    private void Move_on_MapActivity(String email, Type t) {
-        if(email != NULL)
-                checkId(email);
-        else LoginActivity.this.finish();
-        Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+    /*move on MainActivity -> Activity*/
+    private void Move_on_Activity(Class Activity, String email, Type t) {
+        Intent intent = new Intent(LoginActivity.this, Activity);
         intent.putExtra("email", email);
+        if(Activity.equals(MapActivity.class)) {
+            LoginActivity.this.finish();
+            /*load user nickname from the database*/
+            String nickname = "nickname";
+            intent.putExtra("nickname", nickname);
+        }
         intent.putExtra("type", t.toString());
         startActivity(intent);
     }

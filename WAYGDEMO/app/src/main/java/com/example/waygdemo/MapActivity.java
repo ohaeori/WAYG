@@ -59,8 +59,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private final long FINISH_INTERVAL_TIME = 200000;
     private long backPressedTime = 0;
 
-
-
     //for firestore
     FirebaseFirestore db=FirebaseFirestore.getInstance();
     private static final String TAG = "DocSnippets";
@@ -80,7 +78,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     Bundle bundle;
     TextView TextView_name;
 
-    String email;
+    private String email;
+    private String nickname;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,9 +99,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         TextView_name = findViewById(R.id.TextView_name);
         Intent intent = getIntent();
         bundle = intent.getExtras();
+        nickname = bundle.getString("nickname");
         email = bundle.getString("email");// 다음 화면으로 넘겨야함
-        StringTokenizer token = new StringTokenizer(email,"@");
-        TextView_name.setText(token.nextToken());
+        TextView_name.setText(nickname);
     }
 
     //make option(start knu,zoom 14)
@@ -266,8 +266,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         //set infoWindow OnClickListener
         Overlay.OnClickListener listener1 = overlay -> {
-            Toast.makeText(MapActivity.this,""+infoWindow.getMarker().getPosition(),Toast.LENGTH_SHORT).show();
-
             Intent intent = new Intent(MapActivity.this, RoomInfoActivity.class);
             LatLng coordinate = infoWindow.getMarker().getPosition();
             intent.putExtra("email",email);

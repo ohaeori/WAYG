@@ -13,8 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GetDestination"></activity>
-        <!-- [naveroauthlogin][start] for naver ID login -->
+        <activity android:name=".NickNameActivity"></activity>
+        <activity android:name=".GetDestination" /> <!-- [naveroauthlogin][start] for naver ID login -->
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
