@@ -13,18 +13,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NickNameActivity"></activity>
-        <activity android:name=".GetDestination" /> <!-- [naveroauthlogin][start] for naver ID login -->
+
+        <!-- [naveroauthlogin][start] for naver ID login -->
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             tools:replace="android:theme" />
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthLoginInAppBrowserActivity"
-            android:label="OAuth2.0 In-app" /> <!-- [naverMap][start] for naver Map API -->
-        <meta-data
-            android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="c1raxwccgr" />
+            android:label="OAuth2.0 In-app" />
+        <!-- [naverMap][start] for naver Map API -->
+        <meta-data android:name="com.naver.maps.map.CLIENT_ID" android:value="@string/naver_app_key" />
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
 
         <activity android:name=".LoginActivity">
             <intent-filter>
@@ -33,10 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".NickNameActivity"></activity>
         <activity android:name=".MapActivity" />
         <activity android:name=".MakeStartActivity" />
         <activity android:name=".RoomInfoActivity" />
         <activity android:name=".ChatActivity" />
+        <activity android:name=".GetDestination" />
     </application>
 
 </manifest>

@@ -18,7 +18,8 @@ allprojects {
     repositories {
         google()
         jcenter()
-
+        //facebook login
+        mavenCentral()
         //for naver map API
         maven{
             url 'https://navercorp.bintray.com/maps'
